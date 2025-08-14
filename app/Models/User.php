@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -52,6 +54,9 @@ class User extends Authenticatable
      */
     public function initials(): string
     {
+        /**
+         * @phpstan-param model-property<\App\User> $name
+         */
         return Str::of($this->name)
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
