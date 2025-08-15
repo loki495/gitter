@@ -14,20 +14,16 @@ services:
       - "traefik.http.routers.git.entrypoints=web"
       - "traefik.http.services.git.loadbalancer.server.port=80"
     command: >
-      sh -c "a2enmod rewrite &&
+      sh -c "
+             groupmod -g 1000 www-data &&
+             usermod -u 1000 www-data &&
+
              echo '<Directory /var/www/html>' > /etc/apache2/conf-enabled/allow-override.conf &&
              echo 'AllowOverride All' >> /etc/apache2/conf-enabled/allow-override.conf &&
              echo '</Directory>' >> /etc/apache2/conf-enabled/allow-override.conf &&
              sed -i 's|DocumentRoot .*|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf &&
-             chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database 2>/dev/null || true &&
-             find /var/www/html/storage -type d -exec chmod 775 {} \\; 2>/dev/null || true &&
-             find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \\; 2>/dev/null || true &&
-             find /var/www/html/database -type d -exec chmod 775 {} \\; 2>/dev/null || true &&
-             find /var/www/html/storage -type f -exec chmod 644 {} \\; 2>/dev/null || true &&
-             find /var/www/html/storage/logs -type f -exec chmod 777 {} \\; 2>/dev/null || true &&
-             find /var/www/html/database/database.sqlite -type f -exec chmod 777 {} \\; 2>/dev/null || true &&
-             find /var/www/html/bootstrap/cache -type f -exec chmod 644 {} \\; 2>/dev/null || true &&
-             find /var/www/html/database -type f -exec chmod 644 {} \\; 2>/dev/null || true &&
+
+             a2enmod rewrite &&
              exec apache2-foreground"
     networks:
       - web
@@ -41,7 +37,7 @@ services:
       - ./:/var/www/html
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.git-vite.rule=Host()"
+      - "traefik.http.routers.git-vite.rule=Host(`vite.git.dev.local.test`)"
       - "traefik.http.routers.git-vite.entrypoints=web"
       - "traefik.http.services.git-vite.loadbalancer.server.port=5173"
     networks:

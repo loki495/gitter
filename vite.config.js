@@ -8,11 +8,11 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         hmr: {
-            host: 'vite.jp.dev.local.test',
+            host: 'vite.git.dev.local.test',
             clientPort: 80
         },
         cors: true,
-        allowedHosts: ['vite.jp.dev.local.test'],
+        allowedHosts: ['vite.git.dev.local.test'],
     },
     plugins: [
         laravel({
