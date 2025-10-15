@@ -15,7 +15,10 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void {}
+    public function register(): void {
+        $this->app->singleton(\App\Services\CliRunner::class);
+        $this->app->singleton(\App\Services\SshService::class);
+    }
 
     /**
      * Bootstrap any application services.
@@ -45,6 +48,8 @@ class AppServiceProvider extends ServiceProvider
     {
         if (! $this->app->isLocal()) {
             URL::forceScheme('https');
+        } else {
+            URL::forceScheme('http');
         }
     }
 
