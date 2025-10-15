@@ -5,6 +5,11 @@ use Livewire\Volt\Volt;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('/', 'admin.dashboard')->name('dashboard');
+
+    Volt::route('machines', 'admin.machines.index')->name('machines.index');
+    Volt::route('machines/create', 'admin.machines.edit')->name('machines.create');
+    Volt::route('machines/{machine}', 'admin.machines.edit')->name('machines.edit');
+
     Volt::route('sites', 'admin.sites.index')->name('sites.index');
 });
 

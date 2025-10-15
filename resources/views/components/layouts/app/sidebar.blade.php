@@ -12,6 +12,7 @@
             </a>
 
             <flux:navlist variant="outline">
+                <flux:navlist.item icon="list-bullet" :href="route('machines.index')" :current="request()->routeIs('machines.index')" wire:navigate>{{ __('Machines') }}</flux:navlist.item>
                 <flux:navlist.item icon="list-bullet" :href="route('sites.index')" :current="request()->routeIs('sites.index')" wire:navigate>{{ __('Sites') }}</flux:navlist.item>
             </flux:navlist>
 
