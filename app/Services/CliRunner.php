@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 class CliRunner
@@ -7,7 +9,7 @@ class CliRunner
     /**
      * Run a command and return output.
      *
-     * @param string|array<int, string> $command
+     * @param  string|array<int, string>  $command
      * @return array{stdout: string, stderr: string, exit_code: int}
      */
     public function run(string|array $command): array
@@ -19,7 +21,7 @@ class CliRunner
         $output = [];
         $exitCode = 0;
 
-        exec($command . ' 2>&1', $output, $exitCode);
+        exec($command.' 2>&1', $output, $exitCode);
 
         return [
             'stdout' => implode("\n", $output),
@@ -28,4 +30,3 @@ class CliRunner
         ];
     }
 }
-

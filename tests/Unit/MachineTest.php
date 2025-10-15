@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Machine;
 use App\Models\User;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-it('can create a machine with minimal required fields', function () {
+it('can create a machine with minimal required fields', function (): void {
     $machine = Machine::create([
         'name' => 'Test Machine',
         'type' => 'work',
@@ -24,7 +24,7 @@ it('can create a machine with minimal required fields', function () {
     ]);
 });
 
-it('encrypts and decrypts ssh password correctly', function () {
+it('encrypts and decrypts ssh password correctly', function (): void {
     $password = 'supersecret';
     $machine = Machine::create([
         'name' => 'Encrypted Machine',
@@ -39,13 +39,13 @@ it('encrypts and decrypts ssh password correctly', function () {
         ->and($machine->ssh_password_encrypted)->toBe($password);
 });
 
-it('fails when required fields are missing', function () {
+it('fails when required fields are missing', function (): void {
     Machine::create([
         'type' => 'work',
     ]);
 })->throws(\Illuminate\Database\QueryException::class);
 
-it('sets creator and updater relationships correctly', function () {
+it('sets creator and updater relationships correctly', function (): void {
     $user = User::factory()->create();
 
     $machine = Machine::create([
@@ -59,4 +59,3 @@ it('sets creator and updater relationships correctly', function () {
     expect($machine->creator->id)->toBe($user->id)
         ->and($machine->updater->id)->toBe($user->id);
 });
-

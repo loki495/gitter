@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Machine\CheckMachineStatus;
 use App\Models\Machine;
 use App\Models\User;
@@ -8,11 +10,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(Tests\TestCase::class, RefreshDatabase::class)->in('Unit');
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
 });
 
-it('returns reachable status for a machine without SSH key', function () {
+it('returns reachable status for a machine without SSH key', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
         'ip' => '127.0.0.1',
@@ -41,7 +43,7 @@ it('returns reachable status for a machine without SSH key', function () {
         ->and($result['command'])->toBe('ssh command executed');
 });
 
-it('returns reachable status for a machine with SSH key', function () {
+it('returns reachable status for a machine with SSH key', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'admin',
         'ip' => '192.168.1.50',
@@ -69,7 +71,7 @@ it('returns reachable status for a machine with SSH key', function () {
         ->and($result['command'])->toBe('ssh command executed');
 });
 
-it('returns unreachable status when SSH command fails', function () {
+it('returns unreachable status when SSH command fails', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
         'ip' => '10.0.0.1',
@@ -95,4 +97,3 @@ it('returns unreachable status when SSH command fails', function () {
         ->and($result['stderr'])->toBe('Connection refused')
         ->and($result['command'])->toBeNull();
 });
-

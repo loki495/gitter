@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Machine;
@@ -11,8 +13,6 @@ class SshService
     /**
      * Run a command on a machine via SSH.
      *
-     * @param Machine $machine
-     * @param string $command
      * @return array{stdout: string, stderr: string, exit_code: int}
      */
     public function run(Machine $machine, string $command): array
@@ -30,7 +30,7 @@ class SshService
 
         if ($machine->ssh_port) {
             $sshCommand[] = '-p';
-            $sshCommand[] = (string)$machine->ssh_port;
+            $sshCommand[] = (string) $machine->ssh_port;
         }
 
         $sshCommand[] = sprintf('%s@%s', $machine->ssh_user, $machine->ip ?? '127.0.0.1');
@@ -39,4 +39,3 @@ class SshService
         return $this->runner->run($sshCommand);
     }
 }
-

@@ -16,7 +16,7 @@ class MachineFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word() . ' Machine',
+            'name' => $this->faker->word().' Machine',
             'type' => $this->faker->randomElement(['work', 'staging', 'production']),
             'ip' => $this->faker->optional()->ipv4(),
             'ssh_user' => $this->faker->userName(),
@@ -29,4 +29,3 @@ class MachineFactory extends Factory
         ];
     }
 }
-

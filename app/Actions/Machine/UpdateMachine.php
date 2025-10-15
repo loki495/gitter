@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
@@ -11,13 +13,11 @@ class UpdateMachine
     /**
      * Execute the action.
      *
-     * @param  Machine  $machine
      * @param  array<string, mixed>  $data
-     * @return Machine
      *
      * @throws ValidationException
      */
-    public function execute(Machine $machine, array $data): Machine
+    public function execute(Machine $machine, array $data): Machine | null
     {
         // Validate input
         $validator = Validator::make($data, [
@@ -32,10 +32,11 @@ class UpdateMachine
             'updated_by' => ['nullable', 'exists:users,id'],
         ]);
 
+        /** @var array<string, mixed> $validated **/
         $validated = $validator->validate();
 
         // Encrypt password if provided
-        if (array_key_exists('ssh_password_encrypted', $validated) && !empty($validated['ssh_password_encrypted'])) {
+        if (array_key_exists('ssh_password_encrypted', $validated) && ! empty($validated['ssh_password_encrypted'])) {
             $validated['ssh_password_encrypted'] = encrypt($validated['ssh_password_encrypted']);
         }
 
@@ -44,4 +45,3 @@ class UpdateMachine
         return $machine->fresh();
     }
 }
-

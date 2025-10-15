@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
@@ -12,7 +14,6 @@ class CreateMachine
      * Execute the action.
      *
      * @param  array<string, mixed>  $data
-     * @return Machine
      *
      * @throws ValidationException
      */
@@ -31,15 +32,15 @@ class CreateMachine
             'created_by' => ['nullable', 'exists:users,id'],
         ]);
 
+        /** @var array<string, mixed> $validated **/
         $validated = $validator->validate();
 
         // If ssh_password_encrypted is set, encrypt it
-        if (!empty($validated['ssh_password_encrypted'])) {
+        if (! empty($validated['ssh_password_encrypted'])) {
             $validated['ssh_password_encrypted'] = encrypt($validated['ssh_password_encrypted']);
         }
 
         // Create the machine
-        return Machine::create($validated);
+        return Machine::create( $validated);
     }
 }
-

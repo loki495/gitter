@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
@@ -11,6 +13,8 @@ class CheckMachineStatus
 
     /**
      * Execute the action.
+     *
+     * @return array<string, mixed>
      */
     public function execute(Machine $machine): array
     {
@@ -33,4 +37,3 @@ class CheckMachineStatus
         }
     }
 }
-

@@ -6,10 +6,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Crypt;
 
 class Machine extends Model
 {
+    /** @use HasFactory<\Database\Factories\MachineFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -33,7 +35,6 @@ class Machine extends Model
         'ssh_port' => 22,
     ];
 
-    // Accessor/Mutator for SSH password encryption
     public function setSshPasswordEncryptedAttribute(?string $value): void
     {
         $this->attributes['ssh_password_encrypted'] = $value !== null && $value !== '' && $value !== '0' ? Crypt::encryptString($value) : null;
@@ -44,14 +45,21 @@ class Machine extends Model
         return $value !== null && $value !== '' && $value !== '0' ? Crypt::decryptString($value) : null;
     }
 
-    // Relationships
-    public function creator()
+    /**
+     * @return BelongsTo<User, self>
+     */
+    public function creator() : BelongsTo
     {
+        /** @var BelongsTo<User, self> */
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updater()
+    /**
+     * @return BelongsTo<User, self>
+     */
+    public function updater() : BelongsTo
     {
+        /** @var BelongsTo<User, self> */
         return $this->belongsTo(User::class, 'updated_by');
     }
 }
