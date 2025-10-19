@@ -47,23 +47,24 @@ class Machine extends Model
     }
 
     /**
-     * @return BelongsTo<User, self>
+     * @return BelongsTo<User, $this>
      */
-    public function creator() : BelongsTo
+    public function creator(): BelongsTo
     {
-        /** @var BelongsTo<User, self> */
         return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
-     * @return BelongsTo<User, self>
+     * @return BelongsTo<User, $this>
      */
-    public function updater() : BelongsTo
+    public function updater(): BelongsTo
     {
-        /** @var BelongsTo<User, self> */
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    /**
+     * @return HasMany<Deployment, $this>
+     */
     public function deployments(): HasMany
     {
         return $this->hasMany(Deployment::class);

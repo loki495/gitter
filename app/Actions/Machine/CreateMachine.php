@@ -32,7 +32,7 @@ class CreateMachine
             'created_by' => ['nullable', 'exists:users,id'],
         ]);
 
-        /** @var array<string, mixed> $validated **/
+        /** @var array<string, mixed> $validated * */
         $validated = $validator->validate();
 
         // If ssh_password_encrypted is set, encrypt it
@@ -41,6 +41,6 @@ class CreateMachine
         }
 
         // Create the machine
-        return Machine::create( $validated);
+        return Machine::create($validated);
     }
 }

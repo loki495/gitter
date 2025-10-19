@@ -6,7 +6,7 @@ use App\Actions\Website\UpdateWebsite;
 use Livewire\Volt\Component;
 
 new class extends Component {
-    public ?Website $website;
+    public ?Website $website = null;
     public ?string $name = null;
     public ?string $description = null;
     public ?string $branch = null;

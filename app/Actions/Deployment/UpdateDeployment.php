@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Actions\Deployment;
@@ -11,8 +12,8 @@ use Illuminate\Validation\ValidationException;
 final class UpdateDeployment
 {
     /**
-     * @param Deployment $deployment
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
+     *
      * @throws ValidationException
      */
     public function execute(Deployment $deployment, array $data): Deployment
@@ -24,9 +25,10 @@ final class UpdateDeployment
         ])->validate();
 
         $validated['updated_by'] = Auth::id();
+
+        /** @var array<string, mixed> $validated */
         $deployment->update($validated);
 
         return $deployment->refresh();
     }
 }
-

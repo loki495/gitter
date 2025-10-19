@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -10,9 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Deployment extends Model
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
 
-    /** @var array<int, string> */
     protected $fillable = [
         'website_id',
         'machine_id',
@@ -30,6 +31,8 @@ final class Deployment extends Model
 
     /**
      * Get the website this deployment belongs to.
+     *
+     * @return BelongsTo<Website, $this>
      */
     public function website(): BelongsTo
     {
@@ -38,6 +41,8 @@ final class Deployment extends Model
 
     /**
      * Get the machine this deployment runs on.
+     *
+     * @return BelongsTo<Machine, $this>
      */
     public function machine(): BelongsTo
     {
@@ -46,6 +51,8 @@ final class Deployment extends Model
 
     /**
      * Get the user who created the deployment.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function createdBy(): BelongsTo
     {
@@ -54,6 +61,8 @@ final class Deployment extends Model
 
     /**
      * Get the user who last updated the deployment.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function updatedBy(): BelongsTo
     {
@@ -62,6 +71,8 @@ final class Deployment extends Model
 
     /**
      * Get the branches for this deployment (future feature).
+     *
+     * @return HasMany<Branch, $this>
      */
     public function branches(): HasMany
     {
@@ -69,11 +80,11 @@ final class Deployment extends Model
     }
 
     /**
-     * Get the deployment logs for this deployment (future feature).
+     User* Get the deployment logs for this deployment (future feature).
+     * @return HasMany<DeploymentLog, $this>
      */
     public function logs(): HasMany
     {
         return $this->hasMany(DeploymentLog::class);
     }
 }
-

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Actions\Deployment;
@@ -13,7 +14,7 @@ final class DeleteDeployment
         $deployment = Deployment::find($id);
 
         if (! $deployment) {
-            throw new ModelNotFoundException("Deployment not found.");
+            throw new ModelNotFoundException('Deployment not found.');
         }
 
         return (bool) $deployment->delete();

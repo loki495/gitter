@@ -17,7 +17,7 @@ class UpdateMachine
      *
      * @throws ValidationException
      */
-    public function execute(Machine $machine, array $data): Machine | null
+    public function execute(Machine $machine, array $data): ?Machine
     {
         // Validate input
         $validator = Validator::make($data, [
@@ -32,7 +32,7 @@ class UpdateMachine
             'updated_by' => ['nullable', 'exists:users,id'],
         ]);
 
-        /** @var array<string, mixed> $validated **/
+        /** @var array<string, mixed> $validated * */
         $validated = $validator->validate();
 
         // Encrypt password if provided

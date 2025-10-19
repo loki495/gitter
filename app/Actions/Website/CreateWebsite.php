@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Actions\Website;
@@ -11,7 +12,8 @@ use Illuminate\Validation\ValidationException;
 final class CreateWebsite
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
+     *
      * @throws ValidationException
      */
     public function execute(array $data): Website
@@ -24,7 +26,7 @@ final class CreateWebsite
         $validated['created_by'] = Auth::id();
         $validated['updated_by'] = Auth::id();
 
+        /** @var array<string, mixed> $validated */
         return Website::create($validated);
     }
 }
-

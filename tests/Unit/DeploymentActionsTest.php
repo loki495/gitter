@@ -1,24 +1,26 @@
 <?php
+
 declare(strict_types=1);
 
-use App\Actions\Deployment\{
-    CreateDeployment,
-    UpdateDeployment,
-    DeleteDeployment
-};
-use App\Models\{Deployment, Machine, Website};
-use Illuminate\Validation\ValidationException;
+use App\Actions\Deployment\CreateDeployment;
+use App\Actions\Deployment\DeleteDeployment;
+use App\Actions\Deployment\UpdateDeployment;
+use App\Models\Deployment;
+use App\Models\Machine;
+use App\Models\User;
+use App\Models\Website;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 beforeEach(function (): void {
-    $this->actingAs(\App\Models\User::factory()->create());
+    $this->actingAs(User::factory()->create());
 });
 
 it('creates a deployment successfully', function (): void {
     $website = Website::factory()->create();
     $machine = Machine::factory()->create();
 
-    $action = new CreateDeployment();
+    $action = new CreateDeployment;
     $deployment = $action->execute([
         'website_id' => $website->id,
         'machine_id' => $machine->id,
@@ -34,9 +36,9 @@ it('creates a deployment successfully', function (): void {
 
 it('fails to create deployment with invalid machine id', function (): void {
     $website = Website::factory()->create();
-    $action = new CreateDeployment();
+    $action = new CreateDeployment;
 
-    expect(fn() => $action->execute([
+    expect(fn (): Deployment => $action->execute([
         'website_id' => $website->id,
         'machine_id' => 999,
         'path' => '/invalid',
@@ -45,7 +47,7 @@ it('fails to create deployment with invalid machine id', function (): void {
 
 it('updates a deployment successfully', function (): void {
     $deployment = Deployment::factory()->create(['path' => '/var/www/old']);
-    $action = new UpdateDeployment();
+    $action = new UpdateDeployment;
 
     $updated = $action->execute($deployment, [
         'path' => '/var/www/new',
@@ -58,7 +60,7 @@ it('updates a deployment successfully', function (): void {
 
 it('deletes a deployment successfully', function (): void {
     $deployment = Deployment::factory()->create();
-    $action = new DeleteDeployment();
+    $action = new DeleteDeployment;
 
     $result = $action->execute($deployment->id);
     expect($result)->toBeTrue()
@@ -66,8 +68,7 @@ it('deletes a deployment successfully', function (): void {
 });
 
 it('throws when deleting non-existent deployment', function (): void {
-    $action = new DeleteDeployment();
-    expect(fn() => $action->execute(999))
+    $action = new DeleteDeployment;
+    expect(fn (): bool => $action->execute(999))
         ->toThrow(ModelNotFoundException::class);
 });
-

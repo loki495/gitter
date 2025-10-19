@@ -1,21 +1,21 @@
 <?php
+
 declare(strict_types=1);
 
-use App\Actions\Website\{
-    CreateWebsite,
-    UpdateWebsite,
-    DeleteWebsite
-};
+use App\Actions\Website\CreateWebsite;
+use App\Actions\Website\DeleteWebsite;
+use App\Actions\Website\UpdateWebsite;
+use App\Models\User;
 use App\Models\Website;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 beforeEach(function (): void {
-    $this->actingAs(\App\Models\User::factory()->create());
+    $this->actingAs(User::factory()->create());
 });
 
 it('creates a website successfully', function (): void {
-    $action = new CreateWebsite();
+    $action = new CreateWebsite;
     $website = $action->execute([
         'name' => 'Test Site',
         'description' => 'My test site',
@@ -27,15 +27,15 @@ it('creates a website successfully', function (): void {
 });
 
 it('fails to create a website with duplicate name', function (): void {
-    $action = new CreateWebsite();
+    $action = new CreateWebsite;
     $action->execute(['name' => 'DupSite']);
-    expect(fn() => $action->execute(['name' => 'DupSite']))
+    expect(fn (): Website => $action->execute(['name' => 'DupSite']))
         ->toThrow(ValidationException::class);
 });
 
 it('updates a website successfully', function (): void {
     $website = Website::factory()->create();
-    $action = new UpdateWebsite();
+    $action = new UpdateWebsite;
 
     $updated = $action->execute($website, [
         'name' => 'Updated Name',
@@ -48,15 +48,15 @@ it('updates a website successfully', function (): void {
 it('fails to update a website with duplicate name', function (): void {
     $w1 = Website::factory()->create(['name' => 'One']);
     $w2 = Website::factory()->create(['name' => 'Two']);
-    $action = new UpdateWebsite();
+    $action = new UpdateWebsite;
 
-    expect(fn() => $action->execute($w2, ['name' => 'One']))
+    expect(fn (): Website => $action->execute($w2, ['name' => 'One']))
         ->toThrow(ValidationException::class);
 });
 
 it('deletes a website successfully', function (): void {
     $website = Website::factory()->create();
-    $action = new DeleteWebsite();
+    $action = new DeleteWebsite;
 
     $result = $action->execute($website->id);
     expect($result)->toBeTrue()
@@ -64,8 +64,7 @@ it('deletes a website successfully', function (): void {
 });
 
 it('throws when deleting a non-existent website', function (): void {
-    $action = new DeleteWebsite();
-    expect(fn() => $action->execute(999))
+    $action = new DeleteWebsite;
+    expect(fn (): bool => $action->execute(999))
         ->toThrow(ModelNotFoundException::class);
 });
-

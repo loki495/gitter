@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Actions\Website;
@@ -13,7 +14,7 @@ final class DeleteWebsite
         $website = Website::find($id);
 
         if (! $website) {
-            throw new ModelNotFoundException("Website not found.");
+            throw new ModelNotFoundException('Website not found.');
         }
 
         return (bool) $website->delete();

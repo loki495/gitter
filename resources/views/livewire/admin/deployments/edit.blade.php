@@ -47,7 +47,7 @@ new class extends Component {
             'is_primary' => ['boolean'],
         ]);
 
-        if ($this->deployment) {
+        if ($this->deployment instanceof \App\Models\Deployment) {
             (new UpdateDeployment())->execute($this->deployment, $validated);
             session()->flash('success', 'Deployment updated successfully.');
         } else {
