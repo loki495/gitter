@@ -81,11 +81,7 @@ it('returns unreachable status when SSH command fails', function (): void {
     $fakeSsh->shouldReceive('run')
         ->once()
         ->with($machine, 'echo "ping"')
-        ->andReturn([
-            'stdout' => '',
-            'stderr' => 'Connection refused',
-            'exit_code' => 1,
-        ]);
+        ->andThrow(new \RuntimeException('Connection refused')); // 👈 simulate exception
 
     $this->app->instance(SshService::class, $fakeSsh);
 

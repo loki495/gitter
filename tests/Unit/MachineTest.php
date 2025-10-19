@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\User;
 
@@ -58,4 +59,23 @@ it('sets creator and updater relationships correctly', function (): void {
 
     expect($machine->creator->id)->toBe($user->id)
         ->and($machine->updater->id)->toBe($user->id);
+});
+it('has many deployments', function (): void {
+    // Create a machine
+    $machine = Machine::factory()->create();
+
+    // Create some deployments linked to that machine
+    $deployments = Deployment::factory()->count(2)->create([
+        'machine_id' => $machine->id,
+    ]);
+
+    // Lazy-load relationship
+    $related = $machine->deployments;
+
+    // Assertions
+    expect($related)
+        ->toHaveCount(2)
+        ->each->toBeInstanceOf(Deployment::class)
+        ->and($related->pluck('id')->sort()->values()->all())
+        ->toBe($deployments->pluck('id')->sort()->values()->all());
 });

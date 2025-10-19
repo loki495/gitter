@@ -38,6 +38,22 @@ it('fails to create a machine with missing required fields', function (): void {
     ]);
 })->throws(\Illuminate\Validation\ValidationException::class);
 
+it('encrypts ssh password when provided', function (): void {
+    $action = new CreateMachine;
+
+    $machine = $action->execute([
+        'name' => 'Encrypted Machine',
+        'type' => 'work',
+        'ssh_user' => 'ubuntu',
+        'ssh_password_encrypted' => 'secret123', // triggers encryption
+        'created_by' => $this->user->id,
+    ]);
+
+    expect($machine->ssh_password_encrypted)
+        ->not->toBe('secret123')
+        ->and(decrypt($machine->ssh_password_encrypted))->toBe('secret123');
+});
+
 it('can update a machine successfully', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
@@ -58,6 +74,22 @@ it('can update a machine successfully', function (): void {
         'name' => 'Updated Name',
         'ssh_port' => 2222,
     ]);
+});
+
+it('encrypts ssh password when updating with one', function (): void {
+    $machine = Machine::factory()->create([
+        'ssh_user' => 'ubuntu',
+        'created_by' => $this->user->id,
+    ]);
+
+    $action = new UpdateMachine;
+    $updated = $action->execute($machine, [
+        'ssh_password_encrypted' => 'newpass456',
+    ]);
+
+    expect($updated->ssh_password_encrypted)
+        ->not->toBe('newpass456')
+        ->and(decrypt($updated->ssh_password_encrypted))->toBe('newpass456');
 });
 
 it('fails to update a machine with invalid data', function (): void {
