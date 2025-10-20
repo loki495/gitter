@@ -18,5 +18,3 @@ it('handles extra spaces gracefully', function (): void {
     $user = User::factory()->make(['name' => '  Alan   Turing  ']);
     expect($user->initials())->toBe('AT');
 });
-
-

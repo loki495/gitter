@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\URL;
 use App\Providers\AppServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 it('forces https scheme when not local', function (): void {
     $provider = new AppServiceProvider(app());
 
     // Simulate a non-local environment
-    app()->detectEnvironment(fn () => 'production');
+    app()->detectEnvironment(fn (): string => 'production');
 
     URL::spy();
 
@@ -22,7 +22,7 @@ it('forces http scheme when local', function (): void {
     $provider = new AppServiceProvider(app());
 
     // Simulate a local environment
-    app()->detectEnvironment(fn () => 'local');
+    app()->detectEnvironment(fn (): string => 'local');
 
     URL::spy();
 
@@ -30,4 +30,3 @@ it('forces http scheme when local', function (): void {
 
     URL::shouldHaveReceived('forceScheme')->once()->with('http');
 });
-

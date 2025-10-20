@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Models\Deployment;
 use App\Models\User;
 use App\Models\Website;
-use App\Models\Deployment;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 it('can create a website', function (): void {
     $website = Website::factory()->create();
@@ -44,4 +43,3 @@ it('can access creator and updatedBy relationships', function (): void {
         ->and($website->updatedBy)->toBeInstanceOf(User::class)
         ->and($website->updatedBy->id)->toBe($user->id);
 });
-

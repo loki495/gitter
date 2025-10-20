@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Services\CliRunner;
 
 it('runs a simple string command and returns expected output', function (): void {
-    $runner = new CliRunner();
+    $runner = new CliRunner;
 
     // `echo` returns text to stdout, exit_code = 0
     $result = $runner->run('echo "hello"');
@@ -16,7 +16,7 @@ it('runs a simple string command and returns expected output', function (): void
 });
 
 it('escapes and joins array commands correctly', function (): void {
-    $runner = new CliRunner();
+    $runner = new CliRunner;
 
     // Array command — should be joined into a single string
     $result = $runner->run(['echo', 'test with spaces']);
@@ -27,7 +27,7 @@ it('escapes and joins array commands correctly', function (): void {
 });
 
 it('captures stderr when command fails', function (): void {
-    $runner = new CliRunner();
+    $runner = new CliRunner;
 
     // Nonexistent command => nonzero exit code
     $result = $runner->run('bash -c "nonexistent_command"');

@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\Machine;
-use App\Services\SshService;
 use App\Services\CliRunner;
+use App\Services\SshService;
 
 it('builds ssh command and calls runner', function (): void {
     $machine = Machine::factory()->make([
@@ -17,17 +17,16 @@ it('builds ssh command and calls runner', function (): void {
     $fakeRunner = Mockery::mock(CliRunner::class);
     $fakeRunner->shouldReceive('run')
         ->once()
-        ->with(Mockery::on(function (array $cmd) use ($machine) {
+        ->with(Mockery::on(fn (array $cmd): bool =>
             // Assert that ssh command is properly constructed
-            return $cmd[0] === 'ssh'
-                && in_array('-o', $cmd, true)
-                && in_array('StrictHostKeyChecking=no', $cmd, true)
-                && in_array('-p', $cmd, true)
-                && in_array((string) $machine->ssh_port, $cmd, true)
-                && in_array($machine->ssh_key_path, $cmd, true)
-                && in_array("{$machine->ssh_user}@{$machine->ip}", $cmd, true)
-                && str_ends_with(end($cmd), 'uptime');
-        }))
+            $cmd[0] === 'ssh'
+            && in_array('-o', $cmd, true)
+            && in_array('StrictHostKeyChecking=no', $cmd, true)
+            && in_array('-p', $cmd, true)
+            && in_array((string) $machine->ssh_port, $cmd, true)
+            && in_array($machine->ssh_key_path, $cmd, true)
+            && in_array("{$machine->ssh_user}@{$machine->ip}", $cmd, true)
+            && str_ends_with((string) end($cmd), 'uptime')))
         ->andReturn([
             'stdout' => 'ok',
             'stderr' => '',
@@ -53,11 +52,12 @@ it('handles missing key path and port', function (): void {
     $fakeRunner = Mockery::mock(CliRunner::class);
     $fakeRunner->shouldReceive('run')
         ->once()
-        ->with(Mockery::on(function (array $cmd) use ($machine) {
+        ->with(Mockery::on(function (array $cmd) use ($machine): bool {
             // Should not include -i or -p
             $joined = implode(' ', $cmd);
-            return !str_contains($joined, '-i')
-                && !str_contains($joined, '-p')
+
+            return ! str_contains($joined, '-i')
+                && ! str_contains($joined, '-p')
                 && str_contains($joined, "{$machine->ssh_user}@{$machine->ip}");
         }))
         ->andReturn(['stdout' => 'pong', 'stderr' => '', 'exit_code' => 0]);
@@ -67,4 +67,3 @@ it('handles missing key path and port', function (): void {
 
     expect($result['stdout'])->toBe('pong');
 });
-

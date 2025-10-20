@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Models\Deployment;
+use App\Models\Machine;
 use App\Models\User;
 use App\Models\Website;
-use App\Models\Machine;
-use App\Models\Deployment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -28,7 +28,7 @@ it('requires unique website+machine combination', function (): void {
         'machine_id' => $machine->id,
     ]);
 
-    $duplicate = fn() => Deployment::factory()->create([
+    $duplicate = fn () => Deployment::factory()->create([
         'website_id' => $website->id,
         'machine_id' => $machine->id,
     ]);
@@ -63,4 +63,3 @@ it('can correctly report is_primary attribute', function (): void {
     expect($deployment->is_primary)->toBeTrue()
         ->and($deployment2->is_primary)->toBeFalse();
 });
-
