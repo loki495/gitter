@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Actions\Branch\PullDeploymentBranches;
 use App\Models\Deployment;
 use App\Models\Website;
 use Livewire\Volt\Component;
@@ -11,7 +13,7 @@ new class extends Component {
     public function mount(Website $website): void
     {
         $this->website = $website;
-        $this->deployments = Deployment::with(['website', 'machine'])->get()->toArray();
+        $this->deployments = Deployment::with(['website', 'machine'])->withCount('branches')->get()->toArray();
     }
 
     public function deleteDeployment(int $id): void
@@ -24,6 +26,40 @@ new class extends Component {
         $this->deployments = Deployment::with(['website', 'machine'])->get()->toArray();
     }
 
+    /**
+     * Pull all branches for a given deployment
+     */
+    public function pullBranches(int $deploymentId): void
+    {
+        /** @var Deployment|null $deployment */
+        $deployment = Deployment::find($deploymentId);
+
+        if (! $deployment) {
+            $this->dispatch('notify', [
+                'type' => 'error',
+                'message' => "Deployment not found.",
+            ]);
+            return;
+        }
+
+        try {
+            $branches = app(PullDeploymentBranches::class)->execute($this->deployment);
+            dd($branches);
+
+            $this->dispatch('notify', [
+                'type' => 'success',
+                'message' => "Branches pulled successfully for deployment '{$deployment->path}'.",
+            ]);
+
+            // Optionally refresh branches count or reload deployment info
+            $deployment->refresh();
+        } catch (\Throwable $e) {
+            $this->dispatch('notify', [
+                'type' => 'error',
+                'message' => "Failed to pull branches: " . $e->getMessage(),
+            ]);
+        }
+    }
 };
 ?>
 
@@ -34,6 +70,7 @@ new class extends Component {
                 <th class="px-4 py-2">Machine</th>
                 <th class="px-4 py-2">Path</th>
                 <th class="px-4 py-2">URL</th>
+                <th class="px-4 py-2">Branches</th>
                 <th class="px-4 py-2">Primary</th>
                 <th class="px-4 py-2 text-right">Actions</th>
             </tr>
@@ -51,6 +88,23 @@ new class extends Component {
                     @else
                     -
                     @endif
+                </td>
+                <td class="px-4 py-2 flex gap-2">
+                    <span class="text-zinc-400 font-semibold">{{ $deployment['branches_count'] }}</span>
+                    <x-button
+                        wire:click="pullBranches({{ $deployment['id'] }})"
+                        wire:loading.attr="disabled"
+                        wire:target="pullBranches({{ $deployment['id'] }})"
+                        size="sm">
+                        Pull
+                    </x-button>
+
+                    <x-button
+                        href="{{ route('branches.index', ['website' => $website, 'deployment' => $deployment['id']]) }}"
+                        variant="primary"
+                        size="sm">
+                        View
+                    </x-button>
                 </td>
                 <td class="px-4 py-2">
                     @if($deployment['is_primary'])
