@@ -18,6 +18,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('websites/{website}/deployments', 'admin.deployments.index')->name('deployments.index');
     Volt::route('websites/{website}/deployments/create', 'admin.deployments.edit')->name('deployments.create');
     Volt::route('websites/{website}/deployments/{deployment}', 'admin.deployments.edit')->name('deployments.edit');
+
+    Volt::route('website/{website}/deployments/{deployment}/branches', 'admin.branches.index')->name('branches.index');
+    Volt::route('website/{website}/deployments/{deployment}/branches/create', 'admin.branches.edit')->name('branches.create');
+    Volt::route('website/{website}/deployments/{deployment}/branches/{branch}', 'admin.branches.edit')->name('branches.edit');
 });
 
 Route::middleware(['auth'])->group(function () {
