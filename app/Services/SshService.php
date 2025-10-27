@@ -18,14 +18,14 @@ class SshService
     public function run(Machine $machine, string $command): array
     {
         $sshCommand = [
-            'ssh',
+            '/usr/bin/ssh',
             '-o', 'StrictHostKeyChecking=no',
             '-o', 'ConnectTimeout=5',
         ];
 
         if ($machine->ssh_key_path) {
             $sshCommand[] = '-i';
-            $sshCommand[] = $machine->ssh_key_path;
+            $sshCommand[] = realpath($machine->ssh_key_path);
         }
 
         if ($machine->ssh_port) {
@@ -34,7 +34,7 @@ class SshService
         }
 
         $sshCommand[] = sprintf('%s@%s', $machine->ssh_user, $machine->ip ?? '127.0.0.1');
-        $sshCommand[] = $command;
+        $sshCommand[] = '"' . $command . '"';
 
         return $this->runner->run($sshCommand);
     }

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Services;
@@ -15,18 +14,43 @@ class CliRunner
     public function run(string|array $command): array
     {
         if (is_array($command)) {
-            $command = implode(' ', array_map('escapeshellarg', $command));
+            $command = $this->buildCommandString($command);
         }
 
         $output = [];
         $exitCode = 0;
 
-        exec($command.' 2>&1', $output, $exitCode);
+        exec($command . ' 2>&1', $output, $exitCode);
+        dd($command, $output, $exitCode);
+
+        $stdout = implode("\n", $output);
 
         return [
-            'stdout' => implode("\n", $output),
-            'stderr' => $exitCode === 0 ? '' : implode("\n", $output),
-            'exit_code' => $exitCode,
+            'stdout'      => $stdout,
+            'stderr'      => $exitCode === 0 ? '' : $stdout,
+            'exit_code'   => $exitCode,
+            'duration_ms' => 0,
         ];
     }
+
+    /**
+     * Build a safe command string without over-quoting.
+     */
+    protected function buildCommandString(array $parts): string
+    {
+        $escaped = [];
+        foreach ($parts as $i => $part) {
+            if ($i === 0) {
+                // Executable, never quote
+                $escaped[] = $part;
+            } else {
+                // Escape only internal quotes
+                $escaped[] = str_replace("'", "'\\''", $part);
+            }
+        }
+
+        // Join with spaces (not quoted)
+        return implode(' ', $escaped);
+    }
 }
+
