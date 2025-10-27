@@ -8,11 +8,19 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/var/www/html
+      - ./storage/ssh:/var/www/html/storage/ssh:rw
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.git.rule=Host(`git.dev.local.test`)"
       - "traefik.http.routers.git.entrypoints=web"
       - "traefik.http.services.git.loadbalancer.server.port=80"
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM php:8.3-fpm
+        RUN apt-get update && apt-get install -y --no-install-recommends \
+          curl wget openssh-client git vim-tiny jq procps iputils-ping procps ca-certificatesca-certificates \
+          && rm -rf /var/lib/apt/lists/*
     command: >
       sh -c "
         set -e
