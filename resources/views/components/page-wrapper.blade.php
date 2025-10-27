@@ -5,6 +5,7 @@
     'backUrl' => '',
     'button_text' => '',
     'button_url' => '',
+    'button_action' => '',
 ])
 <div class="w-full mx-auto space-y-6">
     @if ($back)
@@ -23,6 +24,10 @@
             variant="primary">
             {{ $button_text }}
         </x-button>
+        @elseif ($button_action)
+            <x-button wire:click="{{ $button_action }}" variant="primary">
+                {{ $button_text }}
+            </x-button>
         @endif
 
     </div>
