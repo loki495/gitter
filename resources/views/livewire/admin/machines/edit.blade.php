@@ -47,9 +47,11 @@ new class extends Component
         ]);
 
         if ($this->machine->exists) {
+            $this->authorize('update', $this->machine);
             $update->execute($this->machine, $validated);
             session()->flash('success', 'Machine updated successfully!');
         } else {
+            $this->authorize('create', $this->machine);
             $create->execute($validated);
             session()->flash('success', 'Machine created successfully!');
         }
