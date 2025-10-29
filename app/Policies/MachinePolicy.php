@@ -22,7 +22,7 @@ final class MachinePolicy extends BasePolicy
      */
     public function create(User $user): bool
     {
-        return $user->exists; // allow any authenticated user to create
+        return $user !== null;
     }
 
     /**

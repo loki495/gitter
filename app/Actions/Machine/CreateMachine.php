@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -19,6 +20,8 @@ class CreateMachine
      */
     public function execute(array $data): Machine
     {
+        Gate::authorize('create', Machine::class);
+
         // Validate input
         $validator = Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],

@@ -6,6 +6,7 @@ namespace App\Actions\Deployment;
 
 use App\Models\Deployment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -18,6 +19,8 @@ final class CreateDeployment
      */
     public function execute(array $data): Deployment
     {
+        Gate::authorize('create', Deployment::class);
+
         $validated = Validator::make($data, [
             'website_id' => ['required', 'integer', 'exists:websites,id'],
             'machine_id' => ['required', 'integer', 'exists:machines,id'],

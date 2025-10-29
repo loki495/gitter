@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
+use Illuminate\Support\Facades\Gate;
 
 class DeleteMachine
 {
     /**
      * Execute the action.
      */
-    public function execute(Machine $machine): void
+    public function execute(Machine $machine): bool
     {
-        $machine->delete();
+        Gate::authorize('delete', $machine);
+        return (bool) $machine->delete();
     }
 }

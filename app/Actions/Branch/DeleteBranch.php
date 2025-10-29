@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace App\Actions\Branch;
 
 use App\Models\Branch;
+use Illuminate\Support\Facades\Gate;
 
-final class UpdateBranch
+final class DeleteBranch
 {
     /**
     * @param array<string, mixed> $data
     **/
-    public function execute(Branch $branch, array $data): Branch
+    public function execute(Branch $branch): Branch
     {
-        $branch->update($data);
-        return $branch;
+        Gate::authorize('delete', $branch);
+        return (bool) $branch->delete();
     }
 }

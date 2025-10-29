@@ -6,17 +6,13 @@ namespace App\Actions\Website;
 
 use App\Models\Website;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Gate;
 
 final class DeleteWebsite
 {
-    public function execute(int $id): bool
+    public function execute(Website $website): bool
     {
-        $website = Website::find($id);
-
-        if (! $website) {
-            throw new ModelNotFoundException('Website not found.');
-        }
-
+        Gate::authorize('delete', $website);
         return (bool) $website->delete();
     }
 }

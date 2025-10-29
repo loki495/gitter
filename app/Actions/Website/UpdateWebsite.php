@@ -6,6 +6,7 @@ namespace App\Actions\Website;
 
 use App\Models\Website;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -18,6 +19,8 @@ final class UpdateWebsite
      */
     public function execute(Website $website, array $data): Website
     {
+        Gate::authorize('update', $website);
+
         $validated = Validator::make($data, [
             'name' => ['required', 'string', 'max:255', 'unique:websites,name,'.$website->id],
             'description' => ['nullable', 'string'],

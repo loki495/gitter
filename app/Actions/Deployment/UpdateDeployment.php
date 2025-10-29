@@ -6,6 +6,7 @@ namespace App\Actions\Deployment;
 
 use App\Models\Deployment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -18,6 +19,8 @@ final class UpdateDeployment
      */
     public function execute(Deployment $deployment, array $data): Deployment
     {
+        Gate::authorize('update', $deployment);
+
         $validated = Validator::make($data, [
             'path' => ['required', 'string', 'max:255'],
             'url' => ['nullable', 'url'],

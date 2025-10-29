@@ -15,6 +15,9 @@ final class CreateBranch
      */
     public function execute(Deployment $deployment, array $data): Branch
     {
+
+        Gate::authorize('create', Branch::class);
+
         $validated = Validator::make($data, [
             'name' => [
                 'required',

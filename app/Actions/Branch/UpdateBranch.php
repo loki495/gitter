@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Branch;
 
 use App\Models\Branch;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 final class UpdateBranch
@@ -14,6 +15,8 @@ final class UpdateBranch
      */
     public function execute(Branch $branch, array $data): Branch
     {
+        Gate::authorize('update', $branch);
+
         $validated = Validator::make($data, [
             'name' => [
                 'required',

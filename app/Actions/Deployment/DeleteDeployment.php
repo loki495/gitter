@@ -6,17 +6,13 @@ namespace App\Actions\Deployment;
 
 use App\Models\Deployment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Gate;
 
 final class DeleteDeployment
 {
-    public function execute(int $id): bool
+    public function execute(Deployment $deployment): bool
     {
-        $deployment = Deployment::find($id);
-
-        if (! $deployment) {
-            throw new ModelNotFoundException('Deployment not found.');
-        }
-
+        Gate::authorize('delete', $deployment);
         return (bool) $deployment->delete();
     }
 }

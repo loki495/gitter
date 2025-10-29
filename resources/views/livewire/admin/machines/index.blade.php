@@ -23,7 +23,6 @@ new class extends Component {
 
     public function deleteMachine(Machine $machine, DeleteMachine $deleteAction): void
     {
-        $this->authorize('delete', Machine::class);
         $deleteAction->execute($machine);
         $this->loadMachines();
     }
