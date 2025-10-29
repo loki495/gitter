@@ -22,6 +22,8 @@ final class BranchFactory extends Factory
             'is_tracking_remote' => $this->faker->boolean(50),
             'last_commit' => $this->faker->optional()->sha1(),
             'last_checked_at' => $this->faker->optional()->dateTimeBetween('-7 days', 'now'),
+            'created_at' => $this->faker->dateTimeBetween('-7 days', 'now'),
+            'updated_at' => now(),
         ];
     }
 

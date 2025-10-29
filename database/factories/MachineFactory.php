@@ -24,8 +24,7 @@ class MachineFactory extends Factory
             'ssh_key_path' => $this->faker->optional()->filePath(),
             'ssh_password_encrypted' => $this->faker->optional()->password(),
             'notes' => $this->faker->optional()->sentence(),
-            'created_by' => User::factory(),
-            'updated_by' => User::factory(),
+            'user_id' => User::factory(),
         ];
     }
 }

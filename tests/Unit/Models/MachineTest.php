@@ -46,20 +46,6 @@ it('fails when required fields are missing', function (): void {
     ]);
 })->throws(\Illuminate\Database\QueryException::class);
 
-it('sets creator and updater relationships correctly', function (): void {
-    $user = User::factory()->create();
-
-    $machine = Machine::create([
-        'name' => 'Rel Machine',
-        'type' => 'production',
-        'ssh_user' => 'root',
-        'created_by' => $user->id,
-        'updated_by' => $user->id,
-    ]);
-
-    expect($machine->creator->id)->toBe($user->id)
-        ->and($machine->updater->id)->toBe($user->id);
-});
 it('has many deployments', function (): void {
     // Create a machine
     $machine = Machine::factory()->create();

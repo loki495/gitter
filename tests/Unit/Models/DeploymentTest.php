@@ -43,17 +43,14 @@ it('can access website and machine relationships', function (): void {
         ->and($deployment->machine)->toBeInstanceOf(Machine::class);
 });
 
-it('can access createdBy and updatedBy relationships', function (): void {
+it('can access user relationship', function (): void {
     $user = User::factory()->create();
     $deployment = Deployment::factory()->create([
-        'created_by' => $user->id,
-        'updated_by' => $user->id,
+        'user_id' => $user->id,
     ]);
 
-    expect($deployment->createdBy)->toBeInstanceOf(User::class)
-        ->and($deployment->createdBy->id)->toBe($user->id)
-        ->and($deployment->updatedBy)->toBeInstanceOf(User::class)
-        ->and($deployment->updatedBy->id)->toBe($user->id);
+    expect($deployment->user)->toBeInstanceOf(User::class)
+        ->and($deployment->user->id)->toBe($user->id);
 });
 
 it('can correctly report is_primary attribute', function (): void {

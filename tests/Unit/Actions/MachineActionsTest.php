@@ -19,13 +19,13 @@ it('can create a machine successfully', function (): void {
         'name' => 'Action Machine',
         'type' => 'work',
         'ssh_user' => 'ubuntu',
-        'created_by' => $this->user->id,
+        'user_id' => $this->user->id,
     ]);
 
     expect($machine)->toBeInstanceOf(Machine::class)
         ->and($machine->name)->toBe('Action Machine')
         ->and($machine->ssh_port)->toBe(22)
-        ->and($machine->creator->id)->toBe($this->user->id);
+        ->and($machine->user->id)->toBe($this->user->id);
 
     $this->assertDatabaseHas('machines', ['id' => $machine->id]);
 });
@@ -46,7 +46,7 @@ it('encrypts ssh password when provided', function (): void {
         'type' => 'work',
         'ssh_user' => 'ubuntu',
         'ssh_password_encrypted' => 'secret123', // triggers encryption
-        'created_by' => $this->user->id,
+        'user_id' => $this->user->id,
     ]);
 
     expect($machine->ssh_password_encrypted)
@@ -57,7 +57,7 @@ it('encrypts ssh password when provided', function (): void {
 it('can update a machine successfully', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
-        'created_by' => $this->user->id,
+        'user_id' => $this->user->id,
     ]);
 
     $action = new UpdateMachine;
@@ -79,7 +79,7 @@ it('can update a machine successfully', function (): void {
 it('encrypts ssh password when updating with one', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
-        'created_by' => $this->user->id,
+        'user_id' => $this->user->id,
     ]);
 
     $action = new UpdateMachine;

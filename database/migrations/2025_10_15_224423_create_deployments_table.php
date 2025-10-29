@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('path');
             $table->string('url')->nullable();
             $table->boolean('is_primary')->default(false);
-            $table->foreignId('created_by')->constrained('users');
-            $table->foreignId('updated_by')->constrained('users');
+            $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
 
             $table->unique(['website_id', 'machine_id']);

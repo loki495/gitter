@@ -29,7 +29,6 @@ class UpdateMachine
             'ssh_password_encrypted' => ['sometimes', 'nullable', 'string'],
             'ip' => ['sometimes', 'nullable', 'ip'],
             'notes' => ['sometimes', 'nullable', 'string'],
-            'updated_by' => ['nullable', 'exists:users,id'],
         ]);
 
         /** @var array<string, mixed> $validated * */

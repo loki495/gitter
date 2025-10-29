@@ -19,7 +19,7 @@ it('returns reachable status for a machine without SSH key', function (): void {
         'ssh_user' => 'ubuntu',
         'ip' => '127.0.0.1',
         'ssh_key_path' => null,
-        'created_by' => $this->user->id,
+        'user_id' => $this->user->id,
     ]);
 
     $fakeSsh = Mockery::mock(SshService::class);

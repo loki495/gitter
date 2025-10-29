@@ -23,8 +23,7 @@ final class CreateWebsite
             'description' => ['nullable', 'string'],
         ])->validate();
 
-        $validated['created_by'] = Auth::id();
-        $validated['updated_by'] = Auth::id();
+        $validated['user_id'] = Auth::id();
 
         /** @var array<string, mixed> $validated */
         return Website::create($validated);

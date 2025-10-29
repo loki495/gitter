@@ -30,16 +30,13 @@ it('can access deployments relationship', function (): void {
         ->and($website->deployments->first()->id)->toBe($deployment->id);
 });
 
-it('can access creator and updatedBy relationships', function (): void {
+it('can access user relationship', function (): void {
     $user = User::factory()->create();
 
     $website = Website::factory()->create([
-        'created_by' => $user->id,
-        'updated_by' => $user->id,
+        'user_id' => $user->id,
     ]);
 
-    expect($website->createdBy)->toBeInstanceOf(User::class)
-        ->and($website->createdBy->id)->toBe($user->id)
-        ->and($website->updatedBy)->toBeInstanceOf(User::class)
-        ->and($website->updatedBy->id)->toBe($user->id);
+    expect($website->user)->toBeInstanceOf(User::class)
+        ->and($website->user->id)->toBe($user->id);
 });

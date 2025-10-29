@@ -24,8 +24,6 @@ final class UpdateDeployment
             'is_primary' => ['boolean'],
         ])->validate();
 
-        $validated['updated_by'] = Auth::id();
-
         /** @var array<string, mixed> $validated */
         $deployment->update($validated);
 

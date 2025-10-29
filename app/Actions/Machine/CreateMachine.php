@@ -29,7 +29,7 @@ class CreateMachine
             'ssh_password_encrypted' => ['nullable', 'string'],
             'ip' => ['nullable', 'ip'],
             'notes' => ['nullable', 'string'],
-            'created_by' => ['nullable', 'exists:users,id'],
+            'user_id' => ['nullable', 'exists:users,id'],
         ]);
 
         /** @var array<string, mixed> $validated * */

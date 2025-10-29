@@ -23,8 +23,6 @@ final class UpdateWebsite
             'description' => ['nullable', 'string'],
         ])->validate();
 
-        $validated['updated_by'] = Auth::id();
-
         /** @var array<string, mixed> $validated */
         $website->update($validated);
 

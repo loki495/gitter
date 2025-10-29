@@ -17,8 +17,7 @@ final class WebsiteFactory extends Factory
         return [
             'name' => $this->faker->unique()->company,
             'description' => $this->faker->sentence,
-            'created_by' => User::factory(),
-            'updated_by' => User::factory(),
+            'user_id' => User::factory(),
         ];
     }
 }

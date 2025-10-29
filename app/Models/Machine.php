@@ -24,8 +24,7 @@ class Machine extends Model
         'ssh_key_path',
         'ssh_password_encrypted',
         'notes',
-        'created_by',
-        'updated_by',
+        'user_id',
     ];
 
     protected $casts = [
@@ -49,17 +48,9 @@ class Machine extends Model
     /**
      * @return BelongsTo<User, $this>
      */
-    public function creator(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    /**
-     * @return BelongsTo<User, $this>
-     */
-    public function updater(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(User::class);
     }
 
     /**

@@ -17,8 +17,7 @@ final class Website extends Model
     protected $fillable = [
         'name',
         'description',
-        'created_by',
-        'updated_by',
+        'user_id',
     ];
 
     /**
@@ -36,18 +35,9 @@ final class Website extends Model
      *
      * @return BelongsTo<User, $this>
      */
-    public function createdBy(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the user who last updated the website.
-     *
-     * @return BelongsTo<User, $this>
-     */
-    public function updatedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
 }

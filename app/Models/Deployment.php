@@ -20,8 +20,7 @@ final class Deployment extends Model
         'path',
         'url',
         'is_primary',
-        'created_by',
-        'updated_by',
+        'user_id',
     ];
 
     /** @var array<string, string> */
@@ -54,19 +53,9 @@ final class Deployment extends Model
      *
      * @return BelongsTo<User, $this>
      */
-    public function createdBy(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    /**
-     * Get the user who last updated the deployment.
-     *
-     * @return BelongsTo<User, $this>
-     */
-    public function updatedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(User::class);
     }
 
     /**

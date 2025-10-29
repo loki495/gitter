@@ -26,8 +26,7 @@ final class CreateDeployment
             'is_primary' => ['boolean'],
         ])->validate();
 
-        $validated['created_by'] = Auth::id();
-        $validated['updated_by'] = Auth::id();
+        $validated['user_id'] = Auth::id();
 
         /** @var array<string, mixed> $validated */
         return Deployment::create($validated);

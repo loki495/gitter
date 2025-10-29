@@ -22,8 +22,7 @@ final class DeploymentFactory extends Factory
             'path' => '/var/www/'.$this->faker->word,
             'url' => $this->faker->url,
             'is_primary' => false,
-            'created_by' => User::factory(),
-            'updated_by' => User::factory(),
+            'user_id' => User::factory(),
         ];
     }
 }
