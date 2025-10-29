@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 
 beforeEach(function (): void {
-    $this->actingAs(User::factory()->create());
+    $this->user = User::factory()->create();
+    $this->actingAs($this->user);
 });
 
 it('creates a website successfully', function (): void {
@@ -34,7 +35,9 @@ it('fails to create a website with duplicate name', function (): void {
 });
 
 it('updates a website successfully', function (): void {
-    $website = Website::factory()->create();
+    $website = Website::factory()->create([
+        'user_id' => $this->user->id,
+    ]);
     $action = new UpdateWebsite;
 
     $updated = $action->execute($website, [
@@ -46,8 +49,8 @@ it('updates a website successfully', function (): void {
 });
 
 it('fails to update a website with duplicate name', function (): void {
-    $w1 = Website::factory()->create(['name' => 'One']);
-    $w2 = Website::factory()->create(['name' => 'Two']);
+    $w1 = Website::factory()->create(['name' => 'One', 'user_id' => $this->user->id]);
+    $w2 = Website::factory()->create(['name' => 'Two', 'user_id' => $this->user->id]);
     $action = new UpdateWebsite;
 
     expect(fn (): Website => $action->execute($w2, ['name' => 'One']))
@@ -55,16 +58,27 @@ it('fails to update a website with duplicate name', function (): void {
 });
 
 it('deletes a website successfully', function (): void {
-    $website = Website::factory()->create();
+    $website = Website::factory()->create([
+        'user_id' => $this->user->id,
+    ]);
     $action = new DeleteWebsite;
 
-    $result = $action->execute($website->id);
+    $result = $action->execute($website);
     expect($result)->toBeTrue()
         ->and(Website::find($website->id))->toBeNull();
 });
 
-it('throws when deleting a non-existent website', function (): void {
+it('throws when deleting someone else website', function (): void {
+    $user = User::factory()->create();
+
+    $user2 = User::factory()->create();
+
+    $website = Website::factory()->create([
+        'user_id' => $user2->id,
+    ]);
+
+    $this->actingAs($user);
+
     $action = new DeleteWebsite;
-    expect(fn (): bool => $action->execute(999))
-        ->toThrow(ModelNotFoundException::class);
-});
+    $action->execute($website);
+})->throws("This action is unauthorized.");

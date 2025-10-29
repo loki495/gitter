@@ -10,6 +10,7 @@ use App\Models\User;
 
 beforeEach(function (): void {
     $this->user = User::factory()->create();
+    $this->actingAs($this->user);
 });
 
 it('can create a machine successfully', function (): void {
@@ -95,6 +96,7 @@ it('encrypts ssh password when updating with one', function (): void {
 it('fails to update a machine with invalid data', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
+        'user_id' => $this->user->id,
     ]);
 
     $action = new UpdateMachine;
@@ -105,7 +107,9 @@ it('fails to update a machine with invalid data', function (): void {
 })->throws(\Illuminate\Validation\ValidationException::class);
 
 it('can delete a machine successfully', function (): void {
-    $machine = Machine::factory()->create();
+    $machine = Machine::factory()->create([
+        'user_id' => $this->user->id,
+    ]);
 
     $action = new DeleteMachine;
     $action->execute($machine);

@@ -9,14 +9,14 @@ use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\User;
 use App\Models\Website;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 
-beforeEach(function (): void {
-    $this->actingAs(User::factory()->create());
-});
-
 it('creates a deployment successfully', function (): void {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     $website = Website::factory()->create();
     $machine = Machine::factory()->create();
 
@@ -35,6 +35,9 @@ it('creates a deployment successfully', function (): void {
 });
 
 it('fails to create deployment with invalid machine id', function (): void {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
     $website = Website::factory()->create();
     $action = new CreateDeployment;
 
@@ -46,8 +49,15 @@ it('fails to create deployment with invalid machine id', function (): void {
 });
 
 it('updates a deployment successfully', function (): void {
-    $deployment = Deployment::factory()->create(['path' => '/var/www/old']);
-    $action = new UpdateDeployment;
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $deployment = Deployment::factory()->create([
+        'user_id' => $user->id,
+        'path' => '/var/www/old',
+    ]);
+
+    $action = new UpdateDeployment();
 
     $updated = $action->execute($deployment, [
         'path' => '/var/www/new',
@@ -55,20 +65,37 @@ it('updates a deployment successfully', function (): void {
         'is_primary' => false,
     ]);
 
-    expect($updated->path)->toBe('/var/www/new');
+    expect($updated->path)->toBe('/var/www/new')
+        ->and($updated->url)->toBe('https://newsite.com')
+        ->and($updated->is_primary)->toBeFalse();
 });
 
 it('deletes a deployment successfully', function (): void {
-    $deployment = Deployment::factory()->create();
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    $deployment = Deployment::factory()->create([
+        'user_id' => $user->id,
+    ]);
+
     $action = new DeleteDeployment;
 
-    $result = $action->execute($deployment->id);
+    $result = $action->execute($deployment);
     expect($result)->toBeTrue()
-        ->and(Deployment::find($deployment->id))->toBeNull();
+        ->and(Deployment::find($deployment))->toBeEmpty();
 });
 
-it('throws when deleting non-existent deployment', function (): void {
+it('throws when deleting someone else deployment', function (): void {
+    $user = User::factory()->create();
+
+    $user2 = User::factory()->create();
+
+    $deployment = Deployment::factory()->create([
+        'user_id' => $user2->id,
+    ]);
+
+    $this->actingAs($user);
+
     $action = new DeleteDeployment;
-    expect(fn (): bool => $action->execute(999))
-        ->toThrow(ModelNotFoundException::class);
-});
+    $action->execute($deployment);
+})->throws("This action is unauthorized.");
