@@ -20,9 +20,6 @@ class CliRunner
         $output = [];
         $exitCode = 0;
 
-        exec($command . ' 2>&1', $output, $exitCode);
-        dd($command, $output, $exitCode);
-
         $stdout = implode("\n", $output);
 
         return [
