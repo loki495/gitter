@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Crypt;
 
 class Machine extends Model
@@ -22,7 +23,6 @@ class Machine extends Model
         'ssh_user',
         'ssh_port',
         'ssh_key_path',
-        'ssh_password_encrypted',
         'notes',
         'user_id',
     ];
@@ -34,16 +34,6 @@ class Machine extends Model
     protected $attributes = [
         'ssh_port' => 22,
     ];
-
-    public function setSshPasswordEncryptedAttribute(?string $value): void
-    {
-        $this->attributes['ssh_password_encrypted'] = $value !== null && $value !== '' && $value !== '0' ? Crypt::encryptString($value) : null;
-    }
-
-    public function getSshPasswordEncryptedAttribute(?string $value): ?string
-    {
-        return $value !== null && $value !== '' && $value !== '0' ? Crypt::decryptString($value) : null;
-    }
 
     /**
      * @return BelongsTo<User, $this>
@@ -59,5 +49,13 @@ class Machine extends Model
     public function deployments(): HasMany
     {
         return $this->hasMany(Deployment::class);
+    }
+
+    /**
+     * @return HasOne<SshKey, $this>
+     */
+    public function sshKey() : BelongsTo
+    {
+        return $this->belongsTo(SshKey::class);
     }
 }
