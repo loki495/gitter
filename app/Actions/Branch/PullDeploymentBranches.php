@@ -7,14 +7,12 @@ namespace App\Actions\Branch;
 use App\Models\Deployment;
 use App\Models\Branch;
 use App\Models\DeploymentLog;
-use App\Services\CliRunner;
-use App\Services\SshService;
+use App\Services\GitService;
 
 final class PullDeploymentBranches
 {
     public function __construct(
-        private CliRunner $runner,
-        protected SshService $ssh
+        protected GitService $git
     ) {}
 
     /**
@@ -22,29 +20,15 @@ final class PullDeploymentBranches
      */
     public function execute(Deployment $deployment): array
     {
-        $machine = $deployment->machine;
-        $isRemote = !empty($machine->ip);
-
         $start = microtime(true);
 
-        $command = "cd {$deployment->path} && git branch --no-color";
-
-        if ($isRemote) {
-            // Send command over SSH
-            $result = $this->ssh->run($machine, $command);
-            dd($result);
-        } else {
-            // Local execution
-            $result = $this->runner->run($command);
-            dd($result);
-        }
-
-        $output = $result['stdout'];
-        $exitCode = $result['exit_code'];
+        $output = $this->git->branch
+            ->addArgument('--no-color')
+            ->execute($deployment);
 
         // Parse branches
         $branches = [];
-        foreach (explode("\n", $output) as $line) {
+        foreach ($output as $line) {
             $line = trim($line);
             if ($line === '') continue;
             $isActive = str_starts_with($line, '*');
@@ -74,9 +58,9 @@ final class PullDeploymentBranches
         DeploymentLog::create([
             'deployment_id' => $deployment->id,
             'action' => 'refresh_branches',
-            'command' => $command,
-            'output' => $output,
-            'exit_code' => $exitCode,
+            'command' => implode(' ', $this->git->lastCommand),
+            'output' => $this->git->lastOutput,
+            'exit_code' => $this->git->lastExitCode,
             'executed_at' => now(),
             'duration_ms' => (int)((microtime(true) - $start) * 1000),
         ]);

@@ -6,6 +6,7 @@ namespace App\Actions\Branch;
 
 use App\Models\Branch;
 use App\Models\Deployment;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 final class CreateBranch
@@ -15,8 +16,7 @@ final class CreateBranch
      */
     public function execute(Deployment $deployment, array $data): Branch
     {
-
-        Gate::authorize('create', Branch::class);
+        Gate::authorize('create', [Branch::class, $deployment]);
 
         $validated = Validator::make($data, [
             'name' => [

@@ -12,7 +12,7 @@ final class DeleteBranch
     /**
     * @param array<string, mixed> $data
     **/
-    public function execute(Branch $branch): Branch
+    public function execute(Branch $branch): bool
     {
         Gate::authorize('delete', $branch);
         return (bool) $branch->delete();

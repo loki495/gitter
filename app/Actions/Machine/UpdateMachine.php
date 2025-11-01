@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
+use App\Models\SshKey;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use function Laravel\Prompts\warning;
 
 class UpdateMachine
 {
@@ -28,19 +30,13 @@ class UpdateMachine
             'type' => ['sometimes', 'required', 'string', 'max:50'],
             'ssh_user' => ['sometimes', 'required', 'string', 'max:255'],
             'ssh_port' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:65535'],
-            'ssh_key_path' => ['sometimes', 'nullable', 'string', 'max:1024'],
-            'ssh_password_encrypted' => ['sometimes', 'nullable', 'string'],
-            'ip' => ['sometimes', 'nullable', 'ip'],
+            'ssh_key_id' => ['required', 'exists:ssh_keys,id'],
+            'ip' => ['sometimes', 'nullable', 'min:7'],
             'notes' => ['sometimes', 'nullable', 'string'],
         ]);
 
         /** @var array<string, mixed> $validated * */
         $validated = $validator->validate();
-
-        // Encrypt password if provided
-        if (array_key_exists('ssh_password_encrypted', $validated) && ! empty($validated['ssh_password_encrypted'])) {
-            $validated['ssh_password_encrypted'] = encrypt($validated['ssh_password_encrypted']);
-        }
 
         $machine->update($validated);
 

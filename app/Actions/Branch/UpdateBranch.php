@@ -38,6 +38,9 @@ final class UpdateBranch
             'last_checked_at' => isset($validated['last_checked_at']) ? now() : $branch->last_checked_at,
         ]);
 
+        // TODO: actual update via ssh
+        // TODO: add log
+
         $branch->save();
 
         return $branch;

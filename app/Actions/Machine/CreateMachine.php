@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
+use App\Models\SshKey;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -28,9 +29,8 @@ class CreateMachine
             'type' => ['required', 'string', 'max:50'],
             'ssh_user' => ['required', 'string', 'max:255'],
             'ssh_port' => ['nullable', 'integer', 'min:1', 'max:65535'],
-            'ssh_key_path' => ['nullable', 'string', 'max:1024'],
-            'ssh_password_encrypted' => ['nullable', 'string'],
-            'ip' => ['nullable', 'ip'],
+            'ssh_key_id' => ['required', 'exists:ssh_keys,id'],
+            'ip' => ['nullable', 'min:7', 'max:255'],
             'notes' => ['nullable', 'string'],
             'user_id' => ['nullable', 'exists:users,id'],
         ]);
@@ -38,10 +38,7 @@ class CreateMachine
         /** @var array<string, mixed> $validated * */
         $validated = $validator->validate();
 
-        // If ssh_password_encrypted is set, encrypt it
-        if (! empty($validated['ssh_password_encrypted'])) {
-            $validated['ssh_password_encrypted'] = encrypt($validated['ssh_password_encrypted']);
-        }
+        $key = SshKey::where('filename', $validated['ssh_key_id'])->first();
 
         // Create the machine
         return Machine::create($validated);
