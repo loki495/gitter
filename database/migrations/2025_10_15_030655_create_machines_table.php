@@ -12,15 +12,14 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('type'); // work/staging/production
-            $table->string('ip')->nullable();
+            $table->string('ip');
             $table->string('ssh_user');
             $table->integer('ssh_port')->default(22);
-            $table->string('ssh_key_path')->nullable();
-            $table->text('ssh_password_encrypted')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('user_id')->constrained('users')->nullOnDelete();
+            $table->foreignId('ssh_key_id')->constrained('ssh_keys')->nullOnDelete();
 
             $table->index('ip'); // optional
         });
