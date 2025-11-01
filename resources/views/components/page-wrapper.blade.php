@@ -32,7 +32,7 @@
 
     </div>
 
-    <div {{ $attributes->merge(['class' => 'flex flex-wrap gap-4']) }}>
+    <div {{ $attributes->merge(['class' => 'flex flex-wrap gap-4 overflow-auto']) }}>
         {{ $slot }}
     </div>
 </div>

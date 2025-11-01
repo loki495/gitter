@@ -43,7 +43,7 @@ new class extends Component {
         }
 
         try {
-            $branches = app(PullDeploymentBranches::class)->execute($this->deployment);
+            $branches = app(PullDeploymentBranches::class)->execute($deployment);
             dd($branches);
 
             $this->dispatch('notify', [
@@ -64,7 +64,7 @@ new class extends Component {
 ?>
 
 <x-page-wrapper title="Deployments" :subtitle="$website->name" class="flex flex-col gap-4" back="1" backUrl="{{ route('websites.index') }}" button_text="Add Deployment" button_url="{{ route('deployments.create', ['website' => $website]) }}">
-    <table class="min-w-full bg-zinc-700 rounded overflow-hidden shadow divide-y divide-zinc-600">
+    <table class="min-w-full bg-zinc-700 rounded shadow divide-y divide-zinc-600">
         <thead class="bg-zinc-600">
             <tr class="text-left text-zinc-300">
                 <th class="px-4 py-2">Machine</th>

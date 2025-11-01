@@ -15,6 +15,8 @@
                 <flux:navlist.item icon="list-bullet" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 <flux:navlist.item icon="list-bullet" :href="route('machines.index')" :current="request()->routeIs('machines.index')" wire:navigate>{{ __('Machines') }}</flux:navlist.item>
                 <flux:navlist.item icon="list-bullet" :href="route('websites.index')" :current="request()->routeIs('websites.index')" wire:navigate>{{ __('Websites') }}</flux:navlist.item>
+                <flux:navlist.item icon="list-bullet" :href="route('ssh-keys.index')" :current="request()->routeIs('ssh-keys.index')" wire:navigate>{{ __('SSH Keys') }}</flux:navlist.item>
+                <flux:navlist.item icon="list-bullet" :href="route('deployments.logs')" :current="request()->routeIs('deployments.logs')" wire:navigate>{{ __('Deployments Logs') }}</flux:navlist.item>
             </flux:navlist>
 
             <flux:spacer />

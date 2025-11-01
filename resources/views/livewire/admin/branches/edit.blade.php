@@ -37,11 +37,6 @@ new class extends Component {
 
         $this->redirectRoute('branches.index', $this->deployment);
     }
-
-    public function render()
-    {
-        return view('livewire.branches.edit');
-    }
 };
 ?>
 

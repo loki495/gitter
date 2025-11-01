@@ -40,29 +40,31 @@ new class extends Component {
 };
 ?>
 
-<x-page-wrapper :title="$deployment->website->name" :subtitle="$deployment->path" class="flex flex-col gap-4" back="1" backUrl="{{ route('deployments.index', [$deployment]) }}" button_text="Pull Branches" button_action="pullBranches">
+<x-page-wrapper :title="'Branches for ' . $deployment->website->name . '@' . $deployment->machine->name" :subtitle="$deployment->path" class="flex flex-col gap-4" back="1" backUrl="{{ route('deployments.index', [$deployment]) }}" button_text="Pull Branches" button_action="pullBranches">
 
     <table class="w-full mt-4 text-left">
         <thead>
-            <tr>
-                <th>Name</th>
-                <th>Active</th>
-                <th>Tracking Remote</th>
-                <th>Last Commit</th>
+            <tr class="bg-zinc-900">
+                <th class="p-2 text-center">Name</th>
+                <th class="p-2 text-center">Active</th>
+                <th class="p-2 text-center">Tracking Remote</th>
+                <th class="p-2 text-center">Last Commit</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach ($branches as $branch)
-                <tr class="border-t border-zinc-700">
-                    <td>{{ $branch->name }}</td>
-                    <td>{{ $branch->is_active ? 'Yes' : 'No' }}</td>
-                    <td>{{ $branch->is_tracking_remote ? 'Yes' : 'No' }}</td>
-                    <td>{{ $branch->last_commit ?? '-' }}</td>
-                    <td class="space-x-2">
-                        <button wire:click="setActiveBranch({{ $branch->id }})" class="text-green-400">Activate</button>
-                        <a href="{{ route('branches.edit', [$deployment, $branch]) }}" class="text-blue-400">Edit</a>
-                        <button wire:click="deleteBranch({{ $branch->id }})" wire:confirm="Delete branch '{{ $branch->name }}'?" class="text-red-400">Delete</button>
+                <tr class="border-t border-zinc-700 {{ $branch->is_active ? 'font-bold' : '' }}">
+                    <td class="p-2 text-left">{{ $branch->name }}</td>
+                    <td class="p-2 text-center">{{ $branch->is_active ? 'Yes' : 'No' }}</td>
+                    <td class="p-2 text-center">{{ $branch->is_tracking_remote ? 'Yes' : 'No' }}</td>
+                    <td class="p-2 text-center">{{ $branch->last_commit ?? '-' }}</td>
+                    <td class="p-2 text-right">
+                        @if (!$branch->is_active)
+                            <x-button wire:click="setActiveBranch({{ $branch->id }})" class="text-green-400">Activate</x-button>
+                        @endif
+                        {{--<x-button href="{{ route('branches.edit', [$deployment->website, $deployment, $branch]) }}" variant="primary">Edit</x-button>--}}
+                        <x-button wire:click="deleteBranch({{ $branch->id }})" wire:confirm="Delete branch '{{ $branch->name }}'?" variant="danger">Delete</x-button>
                     </td>
                 </tr>
             @endforeach

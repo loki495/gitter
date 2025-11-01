@@ -14,8 +14,8 @@ new class extends Component {
 
     public function loadMachines(): void
     {
-        $this->machines = Machine::query()
-            ->with(['deployments'])
+        $this->machines = Auth::user()->machines()
+            ->with(['deployments', 'sshKey'])
             ->orderByDesc('created_at')
             ->get()
             ->toArray();
@@ -35,6 +35,7 @@ new class extends Component {
                 <th class="px-4 py-2 text-left">Name</th>
                 <th class="px-4 py-2">Type</th>
                 <th class="px-4 py-2">IP</th>
+                <th class="px-4 py-2">SSHKey</th>
                 <th class="px-4 py-2">Deployments</th>
                 <th class="px-4 py-2 text-center">Actions</th>
             </tr>
@@ -44,7 +45,8 @@ new class extends Component {
             <tr class="hover:bg-zinc-600 transition-colors">
                 <td class="px-4 py-2 font-medium">{{ $machine['name'] }}</td>
                 <td class="px-4 py-2 text-center">{{ ucfirst($machine['type']) }}</td>
-                <td class="px-4 py-2">{{ $machine['ip'] ?? __('Local') }}</td>
+                <td class="px-4 py-2">{{ $machine['ssh_user'] . '@' }}{{ $machine['ip'] ?? __('Local') }}:{{ $machine['ssh_port'] }}</td>
+                <td class="px-4 py-2 font-medium">{{ $machine['ssh_key']['name'] ?? '-' }}</td>
                 <td class="px-4 py-2 text-center">{{ count($machine['deployments']) }} <x-button href="{{ route('machines.deployments', ['machine' => $machine['id']]) }}" class="text-blue-400 hover:underline ml-4">View</x-button></td>
                 <td class="px-4 py-2 flex gap-2 justify-center">
                     <a href="{{ route('machines.edit', $machine['id']) }}"

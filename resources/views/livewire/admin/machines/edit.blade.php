@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Models\User;
 use Livewire\Volt\Component;
 use App\Actions\Machine\{CreateMachine, UpdateMachine};
 use App\Models\Machine;
@@ -13,13 +15,16 @@ new class extends Component
     public ?string $ip = null;
     public string $ssh_user = '';
     public int $ssh_port = 22;
-    public ?string $ssh_key_path = '~/.ssh/';
-    public ?string $ssh_password_encrypted = null;
+    public ?string $ssh_key_id = null;
     public ?string $notes = null;
+    public $sshKeys = [];
 
     public function mount(?Machine $machine): void
     {
+        $user = auth()->user();
+
         $this->machine = $machine;
+        $this->sshKeys = $user->sshKeys->toArray();
 
         if ($machine->exists) {
             $this->name = $machine->name;
@@ -27,8 +32,7 @@ new class extends Component
             $this->ip = $machine->ip;
             $this->ssh_user = $machine->ssh_user;
             $this->ssh_port = $machine->ssh_port;
-            $this->ssh_key_path = $machine->ssh_key_path ?? '~/.ssh/';
-            $this->ssh_password_encrypted = $machine->ssh_password_encrypted;
+            $this->ssh_key_id = $machine->ssh_key_id ?? '';
             $this->notes = $machine->notes;
         }
     }
@@ -38,11 +42,10 @@ new class extends Component
         $validated = $this->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|max:255',
-            'ip' => 'nullable|ip',
+            'ip' => 'nullable|min:7',
             'ssh_user' => 'required|string|max:255',
             'ssh_port' => 'required|integer|min:1|max:65535',
-            'ssh_key_path' => 'nullable|string|max:255',
-            'ssh_password_encrypted' => 'nullable|string',
+            'ssh_key_id' => 'required|exists:ssh_keys,id',
             'notes' => 'nullable|string',
         ]);
 
@@ -133,31 +136,19 @@ new class extends Component
             @enderror
         </div>
 
-        {{-- SSH Key Path --}}
+        {{-- SSH Key --}}
         <div>
             <div class="flex items-center gap-4">
-                <label class="w-40 text-sm font-medium text-zinc-300">SSH Key Path</label>
-                <input type="text" wire:model="ssh_key_path"
-                    class="w-full rounded-lg bg-zinc-700 border border-zinc-600 text-zinc-100 p-2" list="ssh-paths" />
-                <datalist id="ssh-paths">
-                    <option value="~/.ssh/id_rsa"></option>
-                    <option value="~/.ssh/id_ed25519"></option>
-                    <option value="~/.ssh/"></option>
-                </datalist>
+                <label class="w-40 text-sm font-medium text-zinc-300">SSH Key</label>
+                <select id="ssh_key_id" wire:model="ssh_key_id" class="w-2/3 bg-zinc-700 rounded p-2 text-white">
+                    <option value="">-- Select SSH Key --</option>
+                    @foreach ($sshKeys as $sshKey)
+                        <option value="{{ $sshKey['id'] }}">{{ $sshKey['name'] }}</option>
+                    @endforeach
+                </select>
+                <x-button href="{{ route('ssh-keys.create') }}" class="text-blue-400 hover:underline ml-4 p-2">Create SSH Key</x-button>
             </div>
-            @error('ssh_key_path')
-                <p class="text-red-400 text-sm ml-40 mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-        {{-- SSH Password --}}
-        <div>
-            <div class="flex items-center gap-4">
-                <label class="w-40 text-sm font-medium text-zinc-300">SSH Password (Encrypted)</label>
-                <input type="text" wire:model="ssh_password_encrypted"
-                    class="w-full rounded-lg bg-zinc-700 border border-zinc-600 text-zinc-100 p-2" />
-            </div>
-            @error('ssh_password_encrypted')
+            @error('ssh_key_id')
                 <p class="text-red-400 text-sm ml-40 mt-1">{{ $message }}</p>
             @enderror
         </div>
