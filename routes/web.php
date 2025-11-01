@@ -22,6 +22,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('website/{website}/deployments/{deployment}/branches', 'admin.branches.index')->name('branches.index');
     Volt::route('website/{website}/deployments/{deployment}/branches/create', 'admin.branches.edit')->name('branches.create');
     Volt::route('website/{website}/deployments/{deployment}/branches/{branch}', 'admin.branches.edit')->name('branches.edit');
+
+    Volt::route('ssh-keys', 'admin.ssh-keys.index')->name('ssh-keys.index');
+    Volt::route('ssh-keys/create', 'admin.ssh-keys.edit')->name('ssh-keys.create');
+    Volt::route('ssh-keys/{sshKey}', 'admin.ssh-keys.edit')->name('ssh-keys.edit');
+
+    Route::post('ssh-keys/all', 'Admin\SshKeyController@all')->name('ssh-keys.all');
+
+    Volt::route('deployments/logs', 'admin.deployments.logs')->name('deployments.logs');
 });
 
 Route::middleware(['auth'])->group(function () {
