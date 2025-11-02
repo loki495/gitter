@@ -21,16 +21,19 @@ class SshService
     {
         $sshCommand = [
             '/usr/bin/ssh',
+            '-F', '/dev/null',
             '-o', 'StrictHostKeyChecking=no',
             '-o', 'ConnectTimeout=5',
             //'-o', 'KexAlgorithms=diffie-hellman-group-exchange-sha256'
             '-o', 'UserKnownHostsFile=/dev/null',
             '-o', 'LogLevel=ERROR',
+            '-o', 'IdentitiesOnly=yes',
+            '-vvv',
         ];
 
         if ($machine->sshKey) {
             $sshCommand[] = '-i';
-            $sshCommand[] = Storage::path('ssh/'.Auth::id()) . '/' . $machine->sshKey->filename;
+            $sshCommand[] = Storage::path('ssh/'.$machine->sshKey->user->id) . '/' . $machine->sshKey->filename;
         }
 
         if ($machine->ssh_port) {
