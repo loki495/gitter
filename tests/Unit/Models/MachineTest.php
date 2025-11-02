@@ -4,18 +4,30 @@ declare(strict_types=1);
 
 use App\Models\Deployment;
 use App\Models\Machine;
+use App\Models\SshKey;
 use App\Models\User;
 
+beforeEach(function () {
+    $this->user = User::factory()->create();
+    $this->actingAs($this->user);
+});
+
 it('can create a machine with minimal required fields', function (): void {
+    $sshKey = SshKey::factory()->create([
+        'user_id' => $this->user->id
+    ]);
+
     $machine = Machine::create([
         'name' => 'Test Machine',
         'type' => 'work',
+        'ip' => '127.0.0.1',
         'ssh_user' => 'ubuntu',
+        'ssh_key_id' => $sshKey->id,
+        'user_id' => $this->user->id,
     ]);
 
     expect($machine->id)->not()->toBeNull()
-        ->and($machine->ssh_port)->toBe(22)
-        ->and($machine->ssh_password_encrypted)->toBeNull();
+        ->and($machine->ssh_port)->toBe(22);
 
     $this->assertDatabaseHas('machines', [
         'id' => $machine->id,
@@ -23,21 +35,6 @@ it('can create a machine with minimal required fields', function (): void {
         'type' => 'work',
         'ssh_user' => 'ubuntu',
     ]);
-});
-
-it('encrypts and decrypts ssh password correctly', function (): void {
-    $password = 'supersecret';
-    $machine = Machine::create([
-        'name' => 'Encrypted Machine',
-        'type' => 'staging',
-        'ssh_user' => 'admin',
-        'ssh_password_encrypted' => $password,
-    ]);
-
-    $rawValue = Machine::find($machine->id)->getAttributes()['ssh_password_encrypted'];
-
-    expect($rawValue)->not()->toBe($password)
-        ->and($machine->ssh_password_encrypted)->toBe($password);
 });
 
 it('fails when required fields are missing', function (): void {

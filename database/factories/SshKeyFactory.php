@@ -19,7 +19,6 @@ class SshKeyFactory extends Factory
             'name' => $this->faker->word(),
             'filename' => $this->faker->uuid() . '.pem',
             'type' => $this->faker->randomElement(['private', 'public']),
-            'machine' => Machine::factory(),
             'fingerprint' => $this->faker->md5(),
             'user_id' => User::factory(),
         ];

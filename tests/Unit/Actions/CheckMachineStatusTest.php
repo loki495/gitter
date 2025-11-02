@@ -18,7 +18,6 @@ it('returns reachable status for a machine without SSH key', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
         'ip' => '127.0.0.1',
-        'ssh_key_path' => null,
         'user_id' => $this->user->id,
     ]);
 
@@ -47,7 +46,6 @@ it('returns reachable status for a machine with SSH key', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'admin',
         'ip' => '192.168.1.50',
-        'ssh_key_path' => '/fake/path/key.pem',
     ]);
 
     $fakeSsh = Mockery::mock(SshService::class);

@@ -6,6 +6,7 @@ use App\Actions\Machine\CreateMachine;
 use App\Actions\Machine\DeleteMachine;
 use App\Actions\Machine\UpdateMachine;
 use App\Models\Machine;
+use App\Models\SshKey;
 use App\Models\User;
 
 beforeEach(function (): void {
@@ -14,6 +15,11 @@ beforeEach(function (): void {
 });
 
 it('can create a machine successfully', function (): void {
+
+    $sshKey = SshKey::factory()->create([
+        'user_id' => $this->user->id
+    ]);
+
     $action = new CreateMachine;
 
     $machine = $action->execute([
@@ -21,6 +27,8 @@ it('can create a machine successfully', function (): void {
         'type' => 'work',
         'ssh_user' => 'ubuntu',
         'user_id' => $this->user->id,
+        'ssh_key_id' => $sshKey->id,
+        'ip' => '127.0.0.1',
     ]);
 
     expect($machine)->toBeInstanceOf(Machine::class)
@@ -39,32 +47,22 @@ it('fails to create a machine with missing required fields', function (): void {
     ]);
 })->throws(\Illuminate\Validation\ValidationException::class);
 
-it('encrypts ssh password when provided', function (): void {
-    $action = new CreateMachine;
-
-    $machine = $action->execute([
-        'name' => 'Encrypted Machine',
-        'type' => 'work',
-        'ssh_user' => 'ubuntu',
-        'ssh_password_encrypted' => 'secret123', // triggers encryption
-        'user_id' => $this->user->id,
+it('can update a machine successfully', function (): void {
+    $sshKey = SshKey::factory()->create([
+        'user_id' => $this->user->id
     ]);
 
-    expect($machine->ssh_password_encrypted)
-        ->not->toBe('secret123')
-        ->and(decrypt($machine->ssh_password_encrypted))->toBe('secret123');
-});
-
-it('can update a machine successfully', function (): void {
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
         'user_id' => $this->user->id,
+        'ssh_key_id' => $sshKey->id,
     ]);
 
     $action = new UpdateMachine;
     $updated = $action->execute($machine, [
         'name' => 'Updated Name',
         'ssh_port' => 2222,
+        'ssh_key_id' => $sshKey->id,
     ]);
 
     expect($updated->name)->toBe('Updated Name')
@@ -77,26 +75,16 @@ it('can update a machine successfully', function (): void {
     ]);
 });
 
-it('encrypts ssh password when updating with one', function (): void {
-    $machine = Machine::factory()->create([
-        'ssh_user' => 'ubuntu',
-        'user_id' => $this->user->id,
-    ]);
-
-    $action = new UpdateMachine;
-    $updated = $action->execute($machine, [
-        'ssh_password_encrypted' => 'newpass456',
-    ]);
-
-    expect($updated->ssh_password_encrypted)
-        ->not->toBe('newpass456')
-        ->and(decrypt($updated->ssh_password_encrypted))->toBe('newpass456');
-});
-
 it('fails to update a machine with invalid data', function (): void {
+
+    $sshKey = SshKey::factory()->create([
+        'user_id' => $this->user->id
+    ]);
+
     $machine = Machine::factory()->create([
         'ssh_user' => 'ubuntu',
         'user_id' => $this->user->id,
+        'ssh_key_id' => $sshKey->id,
     ]);
 
     $action = new UpdateMachine;

@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 use App\Models\Branch;
 use App\Models\Deployment;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    $this->user = User::factory()->create();
+    $this->actingAs($this->user);
+});
+
 it('belongs to a deployment', function () {
-    $deployment = Deployment::factory()->create();
+    $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
     $branch = Branch::factory()->create(['deployment_id' => $deployment->id]);
 
     expect($branch->deployment)->toBeInstanceOf(Deployment::class);
@@ -17,7 +23,8 @@ it('belongs to a deployment', function () {
 });
 
 it('has correct defaults', function () {
-    $branch = Branch::factory()->create();
+    $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
+    $branch = Branch::factory()->create(['deployment_id' => $deployment->id]);
 
     expect($branch->is_active)->toBeBool();
     expect($branch->is_tracking_remote)->toBeBool();

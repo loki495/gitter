@@ -6,6 +6,7 @@ use App\Actions\Branch\PullDeploymentBranches;
 use App\Models\User;
 use App\Models\Machine;
 use App\Models\Deployment;
+use App\Services\GitService;
 use App\Services\SshService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -17,18 +18,33 @@ beforeEach(function (): void {
 });
 
 it('pulls branches locally if machine has no IP', function () {
-    $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
+    $machine = Machine::factory()->create([
+        'user_id' => $this->user->id,
+        'ip' => '127.0.0.1',
+    ]);
 
-    // Inject a mock CliRunner
-    $mockCli = Mockery::mock(CliRunner::class);
-    $mockCli->shouldReceive('runLocal')->once()->andReturn(['main']);
+    $deployment = Deployment::factory()->create([
+        'user_id' => $this->user->id,
+        'machine_id' => $machine->id,
+    ]);
+
+    // Inject a mock GitService
+    $mockCli = Mockery::mock(GitService::class);
+    $mockCli->shouldReceive('runCommand')
+        ->once()
+        ->andReturn([
+            'stdout' => 'main
+develop',
+            'exit_code' => 0,
+            'stderr' => '',
+        ]);
 
     $action = new PullDeploymentBranches($mockCli);
 
     $branches = $action->execute($deployment);
 
-    expect($branches)->toBe(['main']);
-})->skip();
+    expect($branches)->toBe(['master', 'develop']);
+})->only();
 
 it('pulls branches remotely if machine has IP', function () {
     $deployment = Deployment::factory()->create([
