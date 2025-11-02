@@ -44,9 +44,10 @@ new class extends Component
         <thead class="bg-zinc-900">
             <tr>
                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">ID</th>
-                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">IP</th>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Machine</th>
                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Action</th>
                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Command</th>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Output</th>
                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-300">Created At</th>
             </tr>
         </thead>
@@ -57,11 +58,12 @@ new class extends Component
         </tbody>
         <tbody class="divide-y divide-zinc-700" wire:loading.remove>
             @forelse($this->logs as $log)
-                <tr class="hover:bg-zinc-700">
+                <tr class="hover:bg-zinc-700/50">
                     <td class="px-4 py-2 text-sm text-gray-200">{{ $log->id }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-200">{{ $log->deployment->machine->ip }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-200">{{ $log->deployment->machine->name }}</td>
                     <td class="px-4 py-2 text-sm text-gray-200">{{ $log->action }}</td>
-                    <td class="px-4 py-2 text-sm text-gray-200">{{ $log->command }}</td>
+                    <td class="px-4 py-2 text-sm text-gray-200 align-top"><div class="h-full p-2 whitespace-pre-wrap bg-zinc-700">{{ $log->command }}</div></td>
+                    <td class="px-4 py-2 text-sm text-gray-200 align-top"><div class="h-full p-2 whitespace-pre bg-zinc-700">{{ $log->output }}</div></td>
                     <td class="px-4 py-2 text-sm text-gray-400">{{ $log->created_at->format('Y-m-d H:i:s') }}</td>
                 </tr>
             @empty
