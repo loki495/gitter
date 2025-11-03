@@ -18,7 +18,7 @@ new class extends Component {
     {
         $this->websites = Website::with(['deployments'])->get()->toArray();
         $this->machines = Machine::with(['deployments'])->get()->toArray();
-        $this->sshKeys = SshKey::all()->toArray();
+        $this->sshKeys = SshKey::with(['deployments'])->get()->toArray();
     }
 }
 ?>
@@ -61,7 +61,7 @@ new class extends Component {
                 <x-slot name="header">{{ $sshKey['name'] }}</x-slot>
                 <x-slot name="subheader">{{ $sshKey['filename'] }}</x-slot>
                 <div class="p-4">
-                    Deployments: <x-button href="{{ route('deployments.index', ['website' => $website['id']]) }}" class="text-blue-400 hover:underline ml-4 p-2">{{ count($website['deployments']) }}</x-button>
+                    Deployments: <x-button href="{{ route('deployments.index', ['website' => $website['id']]) }}" class="text-blue-400 hover:underline ml-4 p-2">{{ count($sshKey['deployments']) }}</x-button>
                 </div>
             </x-card>
             @endforeach

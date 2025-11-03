@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Storage;
 
 final class SshKey extends Model
@@ -54,5 +55,12 @@ final class SshKey extends Model
         return Attribute::make(
             get: fn () => Storage::path('ssh/'.$this->user_id.'/'.$this->filename)
         );
+    }
+
+    /**
+     * @return HasManyThrough<Deployment,$this>
+     */
+    public function deployments() : HasManyThrough {
+        return $this->hasManyThrough(Deployment::class, Machine::class);
     }
 }
