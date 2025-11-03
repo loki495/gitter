@@ -26,9 +26,8 @@ final class RunPullDeploymentBranches extends Command
      */
     protected $description = 'Runs the PullDeploymentBranches action for a given deployment ID.';
 
-    public function __construct(
-        private GitService $git
-    ) {
+    public function __construct()
+    {
         parent::__construct();
     }
 

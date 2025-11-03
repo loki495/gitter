@@ -38,7 +38,7 @@ class CreateMachine
         /** @var array<string, mixed> $validated * */
         $validated = $validator->validate();
 
-        $key = SshKey::where('filename', $validated['ssh_key_id'])->first();
+        SshKey::where('filename', $validated['ssh_key_id'])->first();
 
         // Create the machine
         return Machine::create($validated);

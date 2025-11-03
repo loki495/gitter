@@ -13,12 +13,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 });
 
-it('creates a branch successfully', function () {
+it('creates a branch successfully', function (): void {
     $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
 
     $action = new CreateBranch();
@@ -33,13 +33,13 @@ it('creates a branch successfully', function () {
         ->and($branch->name)->toBe('main');
 });
 
-it('fails to create branch with invalid data', function () {
+it('fails to create branch with invalid data', function (): void {
     $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
     $action = new CreateBranch();
-    expect(fn () => $action->execute($deployment, ['name' => null]))->toThrow("The name field is required.");
+    expect(fn (): \App\Models\Branch => $action->execute($deployment, ['name' => null]))->toThrow("The name field is required.");
 });
 
-it('updates a branch successfully', function () {
+it('updates a branch successfully', function (): void {
     $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
     $branch = Branch::factory()->create(['deployment_id' => $deployment->id]);
     $action = new UpdateBranch();
@@ -50,15 +50,15 @@ it('updates a branch successfully', function () {
         ->and($updated->id)->toBe($branch->id);
 });
 
-it('fails to update branch if missing required fields', function () {
+it('fails to update branch if missing required fields', function (): void {
     $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
     $branch = Branch::factory()->create(['deployment_id' => $deployment->id]);
     $action = new UpdateBranch();
 
-    expect(fn () => $action->execute($branch, ['name' => null]))->toThrow("The name field is required.");
+    expect(fn (): \App\Models\Branch => $action->execute($branch, ['name' => null]))->toThrow("The name field is required.");
 });
 
-it('deletes a branch successfully', function () {
+it('deletes a branch successfully', function (): void {
     $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
     $branch = Branch::factory()->create(['deployment_id' => $deployment->id]);
     $action = new DeleteBranch();
@@ -68,7 +68,7 @@ it('deletes a branch successfully', function () {
     expect(Branch::find($branch->id))->toBeNull();
 });
 
-it('handles delete failure gracefully', function () {
+it('handles delete failure gracefully', function (): void {
     $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
     $branch = Branch::factory()->create(['deployment_id' => $deployment->id]);
 
@@ -77,6 +77,6 @@ it('handles delete failure gracefully', function () {
     // Delete the parent deployment to break FK
     $deployment->delete();
 
-    expect(fn () => $action->execute($branch))
+    expect(fn (): bool => $action->execute($branch))
         ->toThrow(\Exception::class);
 });

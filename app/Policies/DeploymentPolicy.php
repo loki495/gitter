@@ -15,35 +15,24 @@ final class DeploymentPolicy extends BasePolicy
 {
     /**
      * Determine whether the user can view the deployment.
-     *
-     * @param User $user
-     * @param Deployment $deployment
-     * @return bool
      */
     public function view(User $user, Deployment $deployment): bool
     {
         // All authenticated users can view deployments by default.
-        return $user !== null;
+        return $user instanceof \App\Models\User;
     }
 
     /**
      * Determine whether the user can create deployments.
-     *
-     * @param User $user
-     * @return bool
      */
     public function create(User $user): bool
     {
         // Any authenticated user may create a deployment.
-        return $user !== null;
+        return $user instanceof \App\Models\User;
     }
 
     /**
      * Determine whether the user can update the deployment.
-     *
-     * @param User $user
-     * @param Deployment $deployment
-     * @return bool
      */
     public function update(User $user, Deployment $deployment): bool
     {
@@ -52,10 +41,6 @@ final class DeploymentPolicy extends BasePolicy
 
     /**
      * Determine whether the user can delete the deployment.
-     *
-     * @param User $user
-     * @param Deployment $deployment
-     * @return bool
      */
     public function delete(User $user, Deployment $deployment): bool
     {

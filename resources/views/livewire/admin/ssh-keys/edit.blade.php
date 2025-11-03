@@ -22,7 +22,7 @@ new class extends Component {
     public ?SshKey $sshKey = null;
     public string $name = '';
     public string $type = 'private';
-    public $file = null;
+    public $file;
     public bool $replaceFile = false;
 
     public function mount(?SshKey $sshKey): void
@@ -41,13 +41,13 @@ new class extends Component {
             'type' => 'required|string|max:255',
         ];
 
-        if (!$this->sshKey || $this->replaceFile) {
+        if (!$this->sshKey instanceof \App\Models\SshKey || $this->replaceFile) {
             $rules['file'] = 'required|file';
         }
 
         $validated = $this->validate($rules);
 
-        if ($this->sshKey) {
+        if ($this->sshKey instanceof \App\Models\SshKey) {
             if ($this->replaceFile && $this->file) {
                 $validated['file'] = $this->file;
             } else {

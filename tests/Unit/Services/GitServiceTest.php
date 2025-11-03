@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\SshKey;
 use App\Models\User;
 use App\Services\GitService;
@@ -9,7 +11,7 @@ use App\Models\Deployment;
 use App\Models\Machine;
 use App\Actions\Git\BaseAction;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->ssh_key = SshKey::factory()->create([
         'user_id' => $this->user->id,
@@ -35,14 +37,11 @@ beforeEach(function () {
 // Named class extending BaseAction for testing
 class TestGitAction extends BaseAction
 {
-    public GitService $git;
-
-    public function __construct(GitService $git)
+    public function __construct(public GitService $git)
     {
-        $this->git = $git;
     }
 
-    public function executeCommand(array $command, Deployment $deployment)
+    public function executeCommand(array $command, Deployment $deployment): array
     {
         return $this->git->runCommand($command, $deployment);
     }
@@ -65,19 +64,19 @@ class TestGitAction extends BaseAction
     }
 }
 
-it('throws exception when accessing non-existent git action', function () {
+it('throws exception when accessing non-existent git action', function (): void {
     $nonExistent = 'nope';
 
     $this->git = app(GitService::class);
     $this->git->{$nonExistent};
 })->throws(\RuntimeException::class, 'Git action class \App\Actions\Git\Nope does not exist.');
 
-it('throws exception when runCommand is called outside a BaseAction', function () {
+it('throws exception when runCommand is called outside a BaseAction', function (): void {
     $this->git = app(GitService::class);
     $this->git->runCommand(['git', 'status'], $this->deployment);
 })->throws(\RuntimeException::class, 'GitService::runCommand() can only be called from a Git BaseAction subclass.');
 
-it('runs ssh command when deployment is not local', function () {
+it('runs ssh command when deployment is not local', function (): void {
 
     $this->git = app(GitService::class);
 
@@ -97,7 +96,7 @@ it('runs ssh command when deployment is not local', function () {
     expect($this->git->lastExitCode)->toBe(0);
 });
 
-it('runs local command from a BaseAction subclass', function () {
+it('runs local command from a BaseAction subclass', function (): void {
     $this->machine->ip = null;
     $this->machine->save();
     $this->machine->refresh();

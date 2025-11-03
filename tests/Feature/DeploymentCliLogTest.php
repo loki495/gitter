@@ -11,7 +11,7 @@ use Mockery\MockInterface;
 
 uses(RefreshDatabase::class);
 
-it('records a log after running a cli command via CliRunner', function () {
+it('records a log after running a cli command via CliRunner', function (): void {
     $deployment = Deployment::factory()->create();
 
     $mock = Mockery::mock(CliRunner::class)

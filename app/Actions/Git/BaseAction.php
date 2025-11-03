@@ -10,7 +10,7 @@ use App\Services\GitService;
 abstract class BaseAction
 {
     protected array $arguments = [];
-    protected $git_cmd = '';
+    protected string $git_cmd;
 
     public function __construct(protected GitService $git)
     {
@@ -37,7 +37,7 @@ abstract class BaseAction
     {
         // Merge arguments into command
         $command = $this->buildCommand($deployment);
-        if (!empty($this->arguments)) {
+        if ($this->arguments !== []) {
             $command = array_merge($command, $this->arguments);
         }
 
@@ -54,7 +54,6 @@ abstract class BaseAction
 
     /**
      * Base git command array, e.g. ['git', 'branch']
-     * @return void
      */
     abstract protected function buildCommand(Deployment $deployment): array;
 

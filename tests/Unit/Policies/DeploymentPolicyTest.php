@@ -6,7 +6,7 @@ use App\Models\Deployment;
 use App\Models\User;
 use App\Policies\DeploymentPolicy;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = new User();
     $this->user->id = 1;
 
@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->otherUser->id = 2;
 });
 
-it('allows any authenticated user to view/create deployment', function () {
+it('allows any authenticated user to view/create deployment', function (): void {
     $deployment = new Deployment();
     $deployment->user_id = $this->user->id;
 
@@ -24,7 +24,7 @@ it('allows any authenticated user to view/create deployment', function () {
         ->and($policy->create($this->user))->toBeTrue();
 });
 
-it('allows update/delete for owner and denies for non-owner', function () {
+it('allows update/delete for owner and denies for non-owner', function (): void {
     $deployment = new Deployment();
     $deployment->user_id = $this->user->id;
 

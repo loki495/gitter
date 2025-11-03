@@ -7,7 +7,7 @@ use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 });

@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Services\CliRunner;
 use App\Services\SshService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
 });

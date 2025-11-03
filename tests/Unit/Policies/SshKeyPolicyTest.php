@@ -6,7 +6,7 @@ use App\Models\SshKey;
 use App\Models\User;
 use App\Policies\SshKeyPolicy;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = new User();
     $this->user->id = 1;
 
@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->otherUser->id = 2;
 });
 
-it('allows user to manage own SSH keys', function () {
+it('allows user to manage own SSH keys', function (): void {
     $key = new SshKey();
     $key->user_id = $this->user->id;
 

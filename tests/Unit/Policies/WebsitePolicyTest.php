@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Website;
 use App\Policies\WebsitePolicy;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = new User();
     $this->user->id = 1;
 
@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->otherUser->id = 2;
 });
 
-it('allows any authenticated user to view/create, only owner can update/delete', function () {
+it('allows any authenticated user to view/create, only owner can update/delete', function (): void {
     $website = new Website();
     $website->user_id = $this->user->id;
 

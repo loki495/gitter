@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Policies\BasePolicy;
 
-it('correctly checks ownership', function () {
+it('correctly checks ownership', function (): void {
     $user = new User();
     $user->id = 1;
 

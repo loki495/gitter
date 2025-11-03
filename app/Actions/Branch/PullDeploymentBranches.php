@@ -9,10 +9,10 @@ use App\Models\Branch;
 use App\Models\DeploymentLog;
 use App\Services\GitService;
 
-final class PullDeploymentBranches
+final readonly class PullDeploymentBranches
 {
     public function __construct(
-        protected GitService $git
+        private GitService $git
     ) {}
 
     /**
@@ -31,16 +31,13 @@ final class PullDeploymentBranches
         // Parse branches
         $branches = [];
         foreach ($output as $line) {
-            $line = trim($line);
-            if ($line === '') continue;
+            $line = trim((string) $line);
             $isActive = str_starts_with($line, '*');
             $name = ltrim($line, '* ');
-            $isRemoteBranch = str_starts_with($name, 'remotes/');
-            if ($isRemoteBranch) $name = substr($name, 8);
             $branches[] = [
-                'name' => $name,
+                'name' => str_starts_with($name, 'remotes/') ? substr($name, 9) : $name,
                 'is_active' => $isActive,
-                'is_tracking_remote' => $isRemoteBranch,
+                'is_tracking_remote' => str_starts_with($name, 'remotes/')
             ];
         }
 

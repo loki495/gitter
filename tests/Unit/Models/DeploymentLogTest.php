@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-it('belongs to a deployment', function () {
+it('belongs to a deployment', function (): void {
     $deployment = Deployment::factory()->create();
     $log = DeploymentLog::factory()->create(['deployment_id' => $deployment->id]);
 
@@ -17,7 +17,7 @@ it('belongs to a deployment', function () {
     expect($log->deployment->id)->toEqual($deployment->id);
 });
 
-it('records realistic log data', function () {
+it('records realistic log data', function (): void {
     $log = DeploymentLog::factory()->create([
         'action' => 'pull',
         'command' => 'git pull origin main',

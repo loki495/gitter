@@ -11,10 +11,10 @@ use function Laravel\Prompts\warning;
 class GitService
 {
 
-    public $lastCommand = null;
-    public $lastOutput = null;
-    public $lastExitCode = null;
-    public $lastMethod = null;
+    public $lastCommand;
+    public $lastOutput;
+    public $lastExitCode;
+    public $lastMethod;
 
     public function __construct(
         protected SshService $ssh,

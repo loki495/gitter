@@ -16,9 +16,7 @@ final class SetActiveBranch
     /**
      * Mark the given branch active and clear others for the deployment.
      *
-     * @param Branch $branch
      *
-     * @return Branch
      */
     public function execute(Branch $branch): void
     {
@@ -35,10 +33,10 @@ final class SetActiveBranch
         // Actually check out the branch on the machine
         $cli = app(CliRunner::class);
         $command = "cd {$deployment->path} && git checkout {$branch->name}";
-        $result = $cli->run($deployment->machine, $command);
+        $result = $cli->run($deployment->machine);
 
         // Record the result
-        RecordDeploymentLog::execute($deployment, [
+        (new RecordDeploymentLog())->execute($deployment, [
             'action' => 'checkout',
             'command' => $command,
             'output' => $result->output,

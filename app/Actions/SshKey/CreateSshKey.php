@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
 
-final class CreateSshKey
+final readonly class CreateSshKey
 {
     public function __construct(private SshFingerprintService $fingerprints) {}
 
@@ -42,15 +42,13 @@ final class CreateSshKey
         File::chmod(dirname($fullPath), 0700);
         File::chmod($fullPath, 0600);
 
-        $key = SshKey::create([
+        return SshKey::create([
             'name' => $name,
             'filename' => $filename,
             'type' => $type,
             'fingerprint' => $this->fingerprints->compute($fullPath),
             'user_id' => Auth::id(),
         ]);
-
-        return $key;
     }
 }
 

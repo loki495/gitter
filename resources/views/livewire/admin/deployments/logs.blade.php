@@ -19,11 +19,9 @@ new class extends Component
     {
         $logs = DeploymentLog::with('deployment.machine')->latest()->take(100)->get();
 
-        return $logs->filter(function ($log) {
-            return str_contains(strtolower($log->command), strtolower($this->search))
-                || str_contains(strtolower($log->deployment->machine->ip ?? ''), strtolower($this->search))
-                || str_contains(strtolower($log->action), strtolower($this->search));
-        });
+        return $logs->filter(fn($log): bool => str_contains(strtolower((string) $log->command), strtolower($this->search))
+            || str_contains(strtolower($log->deployment->machine->ip ?? ''), strtolower($this->search))
+            || str_contains(strtolower((string) $log->action), strtolower($this->search)));
     }
 
 }

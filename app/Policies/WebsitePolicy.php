@@ -20,7 +20,7 @@ final class WebsitePolicy extends BasePolicy
      */
     public function view(User $user, Website $website): bool
     {
-        return $user !== null;
+        return $user instanceof \App\Models\User;
     }
 
     /**
@@ -28,7 +28,7 @@ final class WebsitePolicy extends BasePolicy
      */
     public function create(User $user): bool
     {
-        return $user !== null;
+        return $user instanceof \App\Models\User;
     }
 
     /**

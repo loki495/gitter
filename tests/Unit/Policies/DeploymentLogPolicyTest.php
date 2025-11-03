@@ -7,7 +7,7 @@ use App\Models\DeploymentLog;
 use App\Models\User;
 use App\Policies\DeploymentLogPolicy;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = new User();
     $this->user->id = 1;
 
@@ -15,7 +15,7 @@ beforeEach(function () {
     $this->otherUser->id = 2;
 });
 
-it('allows owner to manage deployment log', function () {
+it('allows owner to manage deployment log', function (): void {
     $deployment = new Deployment();
     $deployment->user_id = $this->user->id;
 
@@ -30,7 +30,7 @@ it('allows owner to manage deployment log', function () {
         ->and($policy->delete($this->user, $log))->toBeTrue();
 });
 
-it('denies non-owner', function () {
+it('denies non-owner', function (): void {
     $deployment = new Deployment();
     $deployment->user_id = $this->otherUser->id;
 

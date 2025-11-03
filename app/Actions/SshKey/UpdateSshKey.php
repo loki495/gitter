@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
-final class UpdateSshKey
+final readonly class UpdateSshKey
 {
     public function __construct(private SshFingerprintService $fingerprints) {}
 

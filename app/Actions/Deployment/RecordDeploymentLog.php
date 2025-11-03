@@ -16,15 +16,7 @@ final class RecordDeploymentLog
     /**
      * Persist a DeploymentLog record.
      *
-     * @param Deployment $deployment
-     * @param string $action
-     * @param string $command
-     * @param string $output
-     * @param int|null $exitCode
-     * @param int|null $durationMs
-     * @param \DateTimeInterface|null $executedAt
      *
-     * @return DeploymentLog
      */
     public function execute(
         Deployment $deployment,
@@ -35,7 +27,7 @@ final class RecordDeploymentLog
         ?int $durationMs = null,
         ?\DateTimeInterface $executedAt = null
     ): DeploymentLog {
-        $executedAt = $executedAt ? Carbon::instance($executedAt) : Carbon::now();
+        $executedAt = $executedAt instanceof \DateTimeInterface ? Carbon::instance($executedAt) : Carbon::now();
 
         /** @var DeploymentLog $log */
         $log = $deployment->logs()->create([

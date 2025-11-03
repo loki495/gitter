@@ -16,13 +16,13 @@ class SshFingerprintService
         $cmd = "$cmd -lf {$path} | awk '{print $2}'";
         $output = shell_exec($cmd);
 
-        if (! $output) {
+        if ($output === '' || $output === '0' || $output === false || $output === null) {
             return null;
         }
 
         $output = trim($output, " \n");
 
-        return $output ? trim($output) : null;
+        return $output !== '' && $output !== '0' ? trim($output) : null;
     }
 }
 

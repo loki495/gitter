@@ -6,7 +6,7 @@ use App\Models\Machine;
 use App\Models\User;
 use App\Policies\MachinePolicy;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = new User();
     $this->user->id = 1;
 
@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->otherUser->id = 2;
 });
 
-it('allows owner to manage machine and creation for any user', function () {
+it('allows owner to manage machine and creation for any user', function (): void {
     $machine = new Machine();
     $machine->user_id = $this->user->id;
 

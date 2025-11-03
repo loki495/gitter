@@ -16,7 +16,7 @@ beforeEach(function (): void {
     $this->actingAs($this->user);
 });
 
-it('pulls branches locally if machine has no ip', function () {
+it('pulls branches locally if machine has no ip', function (): void {
     $machine = Machine::factory()->create([
         'user_id' => $this->user->id,
         'ip' => '',
@@ -42,7 +42,7 @@ it('pulls branches locally if machine has no ip', function () {
 
 });
 
-it('pulls branches remotely if machine has ip', function () {
+it('pulls branches remotely if machine has ip', function (): void {
     $ssh_key = SshKey::factory()->create([
         'user_id' => 1,
         'filename' => 'deploy_key',

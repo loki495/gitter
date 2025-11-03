@@ -7,7 +7,7 @@ use App\Models\Deployment;
 use App\Models\User;
 use App\Policies\BranchPolicy;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = new User();
     $this->user->id = 1;
 
@@ -15,7 +15,7 @@ beforeEach(function () {
     $this->otherUser->id = 2;
 });
 
-it('allows owner to manage branch', function () {
+it('allows owner to manage branch', function (): void {
     $deployment = new Deployment();
     $deployment->user_id = $this->user->id;
 
@@ -30,7 +30,7 @@ it('allows owner to manage branch', function () {
         ->and($policy->delete($this->user, $branch))->toBeTrue();
 });
 
-it('denies non-owner', function () {
+it('denies non-owner', function (): void {
     $deployment = new Deployment();
     $deployment->user_id = $this->otherUser->id;
 
