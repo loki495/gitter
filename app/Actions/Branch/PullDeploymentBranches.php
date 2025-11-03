@@ -26,6 +26,8 @@ final class PullDeploymentBranches
             ->addArgument('--no-color')
             ->execute($deployment);
 
+        $deployment->branches()->delete();
+
         // Parse branches
         $branches = [];
         foreach ($output as $line) {
@@ -42,9 +44,11 @@ final class PullDeploymentBranches
             ];
         }
 
+        $models = [];
+
         // Update DB
         foreach ($branches as $b) {
-            Branch::updateOrCreate(
+            $models[] = Branch::updateOrCreate(
                 ['deployment_id' => $deployment->id, 'name' => $b['name']],
                 [
                     'is_active' => $b['is_active'],
@@ -65,8 +69,6 @@ final class PullDeploymentBranches
             'duration_ms' => (int)((microtime(true) - $start) * 1000),
         ]);
 
-        return $branches;
-
-
+        return $models;
     }
 }
