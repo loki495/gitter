@@ -3,7 +3,12 @@
     "ignore": {
         "words": [
             "php",
-            "rebase"
+            "rebase",
+            "arg",
+            "chainable",
+            "cmd",
+            "getter",
+            "subcommands"
         ],
         "paths": []
     }
