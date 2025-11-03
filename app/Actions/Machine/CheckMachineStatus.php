@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
+use App\Services\CliRunner;
 use App\Services\SshService;
 
 class CheckMachineStatus
 {
-    public function __construct(protected SshService $ssh) {}
+    public function __construct(protected CliRunner $runner, protected SshService $ssh) {}
 
     /**
      * Execute the action.
@@ -19,7 +20,7 @@ class CheckMachineStatus
     public function execute(Machine $machine): array
     {
         try {
-            $result = $this->ssh->run($machine, 'echo "ping"');
+            $result = $machine->ip === '' ? $this->runner->run(['echo', 'ping']) : $this->ssh->run($machine, ['echo', 'ping']);
 
             return [
                 'reachable' => $result['exit_code'] === 0,

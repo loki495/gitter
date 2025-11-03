@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class DeploymentLog extends Model
 {
+    /** @use HasFactory<\Database\Factories\DeploymentFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -42,6 +43,9 @@ final class DeploymentLog extends Model
         'duration_ms' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Deployment, $this>
+     */
     public function deployment(): BelongsTo
     {
         return $this->belongsTo(Deployment::class);

@@ -21,7 +21,7 @@ final class WebsitePolicy extends BasePolicy
      */
     public function view(User $user, Website $website): bool
     {
-        return $user instanceof \App\Models\User;
+        return $user->exists;
     }
 
     /**
@@ -29,7 +29,7 @@ final class WebsitePolicy extends BasePolicy
      */
     public function create(User $user): bool
     {
-        return $user instanceof \App\Models\User;
+        return $user->exists;
     }
 
     /**

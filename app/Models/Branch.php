@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class Branch extends Model
 {
+    /** @use HasFactory<\Database\Factories\BranchFactory> */
     use HasFactory;
 
     /** Match DB defaults */

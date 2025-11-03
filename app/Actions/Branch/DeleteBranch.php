@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Gate;
 
 final class DeleteBranch
 {
-    /**
-     * @param  array<string, mixed>  $data
-     **/
     public function execute(Branch $branch): bool
     {
         Gate::authorize('delete', $branch);

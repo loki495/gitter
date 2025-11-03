@@ -8,6 +8,9 @@ use App\Models\Deployment;
 
 class Branch extends BaseAction
 {
+    /**
+     * @return array<int,string>
+     */
     protected function buildCommand(Deployment $deployment): array
     {
         return [
@@ -19,6 +22,9 @@ class Branch extends BaseAction
         ];
     }
 
+    /**
+     * @return array<int,string>
+     */
     protected function parseOutput(string $output): array
     {
         return array_filter(array_map('trim', explode("\n", $output)));

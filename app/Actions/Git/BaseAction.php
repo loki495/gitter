@@ -9,13 +9,14 @@ use App\Services\GitService;
 
 abstract class BaseAction
 {
+    /** @var array<int,string> */
     protected array $arguments = [];
 
     protected string $git_cmd;
 
     public function __construct(protected GitService $git)
     {
-        $this->git_cmd = trim(shell_exec('which git'), " \n");
+        $this->git_cmd = trim(shell_exec('which git') ?: '', " \n");
     }
 
     /**
@@ -55,6 +56,8 @@ abstract class BaseAction
 
     /**
      * Base git command array, e.g. ['git', 'branch']
+     *
+     * @return array<int, string>
      */
     abstract protected function buildCommand(Deployment $deployment): array;
 

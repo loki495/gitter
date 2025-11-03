@@ -20,7 +20,7 @@ final class DeploymentPolicy extends BasePolicy
     public function view(User $user, Deployment $deployment): bool
     {
         // All authenticated users can view deployments by default.
-        return $user instanceof \App\Models\User;
+        return $user->exists;
     }
 
     /**
@@ -29,7 +29,7 @@ final class DeploymentPolicy extends BasePolicy
     public function create(User $user): bool
     {
         // Any authenticated user may create a deployment.
-        return $user instanceof \App\Models\User;
+        return $user->exists;
     }
 
     /**

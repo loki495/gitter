@@ -7,11 +7,8 @@ use App\Models\User;
 use App\Policies\DeploymentPolicy;
 
 beforeEach(function (): void {
-    $this->user = new User;
-    $this->user->id = 1;
-
-    $this->otherUser = new User;
-    $this->otherUser->id = 2;
+    $this->user = User::factory()->create();
+    $this->otherUser = User::factory()->create();
 });
 
 it('allows any authenticated user to view/create deployment', function (): void {

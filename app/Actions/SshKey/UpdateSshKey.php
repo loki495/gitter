@@ -31,10 +31,10 @@ final readonly class UpdateSshKey
             'file' => ['nullable', 'file', 'max:512'],
         ])->validate();
 
-        $filename = $key?->filename ?? null;
-        $fingerprint = $key?->fingerprint ?? null;
+        $filename = $key->filename ?: null;
+        $fingerprint = $key->fingerprint ?: null;
 
-        if (isset($data['file']) && $data['file'] instanceof UploadedFile) {
+        if (isset($data['file'])) {
             $file = $data['file'];
             $filename = $file->getClientOriginalName();
 
@@ -42,7 +42,11 @@ final readonly class UpdateSshKey
                 throw new \RuntimeException('Invalid file type.');
             }
 
-            $storedPath = $file->storeAs('ssh/'.Auth::id(), $filename);
+            $storedPath = (string) $file->storeAs('ssh/'.Auth::id(), $filename);
+            if (! Storage::exists($storedPath)) {
+                throw new \RuntimeException('Failed to store SSH key.');
+            }
+
             $absolute = Storage::path($storedPath);
             $fingerprint = $this->fingerprints->compute($absolute);
 

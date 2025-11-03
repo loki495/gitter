@@ -35,6 +35,8 @@ class CliRunner
 
     /**
      * Build a safe command string without over-quoting.
+     *
+     * @param  array<int,string>  $parts
      */
     protected function buildCommandString(array $parts): string
     {

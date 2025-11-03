@@ -7,11 +7,8 @@ use App\Models\User;
 use App\Policies\SshKeyPolicy;
 
 beforeEach(function (): void {
-    $this->user = new User;
-    $this->user->id = 1;
-
-    $this->otherUser = new User;
-    $this->otherUser->id = 2;
+    $this->user = User::factory()->create();
+    $this->otherUser = User::factory()->create();
 });
 
 it('allows user to manage own SSH keys', function (): void {

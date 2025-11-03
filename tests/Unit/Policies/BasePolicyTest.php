@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Policies\BasePolicy;
+use Illuminate\Database\Eloquent\Model;
 
 it('correctly checks ownership', function (): void {
-    $user = new User;
-    $user->id = 1;
-
-    $otherUser = new User;
-    $otherUser->id = 2;
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
 
     // Minimal concrete class to test protected method
     $policy = new class extends BasePolicy
     {
-        public function testOwns(User $user, mixed $model): bool
+        public function testOwns(User $user, Model $model): bool
         {
             return $this->owns($user, $model);
         }
     };
 
     // Test model with user_id
-    $model = new class
+    $model = new class extends Model
     {
         public $user_id;
     };

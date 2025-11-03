@@ -9,6 +9,24 @@ use App\Models\User;
 
 beforeEach(function (): void {
     $this->user = User::factory()->create();
+    $this->ssh_key = SshKey::factory()->create([
+        'user_id' => $this->user->id,
+        'filename' => 'deploy_key',
+    ]);
+    $this->machine = Machine::factory()->create([
+        'user_id' => $this->user->id,
+        'ip' => '127.0.0.1',
+        'ssh_port' => 22222,
+        'ssh_user' => 'andres',
+        'ssh_key_id' => $this->ssh_key->id,
+    ]);
+    $this->deployment = Deployment::factory()->make([
+        'user_id' => $this->user->id,
+        'machine_id' => $this->machine->id,
+        'path' => '/home/andres/www/git',
+        'url' => 'https://example.com',
+        'is_primary' => true,
+    ]);
     $this->actingAs($this->user);
 });
 

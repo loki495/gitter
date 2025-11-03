@@ -14,6 +14,7 @@ class SshService
     /**
      * Run a command on a machine via SSH.
      *
+     * @param  array<int,string>|string  $command
      * @return array{stdout: string, stderr: string, exit_code: int}
      */
     public function run(Machine $machine, array|string $command): array
@@ -31,7 +32,7 @@ class SshService
 
         if ($machine->sshKey) {
             $sshCommand[] = '-i';
-            $sshCommand[] = Storage::path('ssh/'.$machine->sshKey->user->id).'/'.$machine->sshKey->filename;
+            $sshCommand[] = Storage::path('ssh/'.$machine->sshKey->user?->id).'/'.$machine->sshKey->filename;
         }
 
         if ($machine->ssh_port) {

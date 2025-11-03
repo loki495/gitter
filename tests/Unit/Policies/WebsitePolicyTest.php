@@ -7,11 +7,8 @@ use App\Models\Website;
 use App\Policies\WebsitePolicy;
 
 beforeEach(function (): void {
-    $this->user = new User;
-    $this->user->id = 1;
-
-    $this->otherUser = new User;
-    $this->otherUser->id = 2;
+    $this->user = User::factory()->create();
+    $this->otherUser = User::factory()->create();
 });
 
 it('allows any authenticated user to view/create, only owner can update/delete', function (): void {

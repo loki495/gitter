@@ -7,15 +7,20 @@ namespace App\Services;
 use App\Actions\Git\BaseAction;
 use App\Models\Deployment;
 
+/**
+ * @property-read \App\Actions\Git\Branch $branch
+ * @property-read \App\Actions\Git\Status $status
+ */
 class GitService
 {
-    public $lastCommand;
+    /** @var array<int, string> */
+    public array $lastCommand;
 
-    public $lastOutput;
+    public string $lastOutput;
 
-    public $lastExitCode;
+    public int $lastExitCode;
 
-    public $lastMethod;
+    public string $lastMethod;
 
     public function __construct(
         protected SshService $ssh,
@@ -33,7 +38,10 @@ class GitService
             throw new \RuntimeException("Git action class $class does not exist.");
         }
 
-        return new $class($this); // inject GitService for execution
+        /** @var BaseAction $instance */
+        $instance = new $class($this);
+
+        return $instance;
     }
 
     /**
@@ -41,7 +49,7 @@ class GitService
      *
      * Called by BaseAction::execute()
      *
-     * @param  array<int,mixed>  $command
+     * @param  array<int,string>  $command
      * @return array{stdout:string,stderr:string,exit_code:int}
      */
     public function runCommand(array $command, Deployment $deployment): array
@@ -51,8 +59,9 @@ class GitService
 
         $allowed = false;
         foreach ($backtrace as $frame) {
-            if (isset($frame['class']) && $frame['class'] === BaseAction::class ||
-                is_subclass_of($frame['class'], BaseAction::class)
+            if (isset($frame['class']) &&
+                ($frame['class'] === BaseAction::class ||
+                is_subclass_of($frame['class'], BaseAction::class))
             ) {
                 $allowed = true;
                 break;
@@ -69,6 +78,9 @@ class GitService
             $result = $this->runner->run($command);
             $this->lastMethod = 'local';
         } else {
+            if (! $deployment->machine) {
+                throw new \RuntimeException('Deployment has no machine.');
+            }
             $result = $this->ssh->run($deployment->machine, $command);
             $this->lastMethod = 'ssh';
         }

@@ -36,7 +36,11 @@ final readonly class CreateSshKey
         }
 
         $filename = $file->getClientOriginalName();
-        $storedPath = $file->storeAs('ssh/'.Auth::id(), $filename);
+        $storedPath = (string) $file->storeAs('ssh/'.Auth::id(), $filename);
+
+        if (! Storage::exists($storedPath)) {
+            throw new RuntimeException('Failed to store SSH key.');
+        }
 
         $fullPath = Storage::path($storedPath);
         File::chmod(dirname($fullPath), 0700);

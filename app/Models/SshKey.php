@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 final class SshKey extends Model
 {
+    /** @use HasFactory<\Database\Factories\SshKeyFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -30,7 +31,7 @@ final class SshKey extends Model
     ];
 
     /**
-     * @return BelongsTo<Machine,$this>
+     * @return HasMany<Machine,$this>
      */
     public function machines(): HasMany
     {
@@ -45,6 +46,9 @@ final class SshKey extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return Attribute<int,string>
+     */
     public function fullPath(): Attribute
     {
         return Attribute::make(

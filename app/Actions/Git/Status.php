@@ -8,6 +8,9 @@ use App\Models\Deployment;
 
 class Status extends BaseAction
 {
+    /**
+     * @return array<int,string>
+     */
     protected function buildCommand(Deployment $deployment): array
     {
         return [

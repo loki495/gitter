@@ -8,11 +8,8 @@ use App\Models\User;
 use App\Policies\BranchPolicy;
 
 beforeEach(function (): void {
-    $this->user = new User;
-    $this->user->id = 1;
-
-    $this->otherUser = new User;
-    $this->otherUser->id = 2;
+    $this->user = User::factory()->create();
+    $this->otherUser = User::factory()->create();
 });
 
 it('allows owner to manage branch', function (): void {

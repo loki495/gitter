@@ -22,7 +22,7 @@ final class MachinePolicy extends BasePolicy
      */
     public function create(User $user): bool
     {
-        return $user instanceof \App\Models\User;
+        return $user->exists;
     }
 
     /**

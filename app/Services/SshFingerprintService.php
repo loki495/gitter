@@ -12,7 +12,7 @@ class SshFingerprintService
             return null;
         }
 
-        $cmd = trim(shell_exec('which ssh-keygen'), " \n");
+        $cmd = trim(shell_exec('which ssh-keygen') ?: '', " \n");
         $cmd = "$cmd -lf {$path} | awk '{print $2}'";
         $output = shell_exec($cmd);
 

@@ -22,6 +22,7 @@ final readonly class PullDeploymentBranches
     {
         $start = microtime(true);
 
+        /** @var array<string> $output */
         $output = $this->git->branch
             ->addArgument('--no-color')
             ->execute($deployment);
@@ -31,7 +32,7 @@ final readonly class PullDeploymentBranches
         // Parse branches
         $branches = [];
         foreach ($output as $line) {
-            $line = trim((string) $line);
+            $line = trim($line);
             $isActive = str_starts_with($line, '*');
             $name = ltrim($line, '* ');
             $branches[] = [
@@ -59,7 +60,7 @@ final readonly class PullDeploymentBranches
         DeploymentLog::create([
             'deployment_id' => $deployment->id,
             'action' => 'refresh_branches',
-            'command' => implode(' ', $this->git->lastCommand),
+            'command' => in_array(implode(' ', $this->git->lastCommand ?? []), ['', '0'], true) ? [] : implode(' ', $this->git->lastCommand ?? []),
             'output' => $this->git->lastOutput,
             'exit_code' => $this->git->lastExitCode,
             'executed_at' => now(),
