@@ -28,7 +28,6 @@ class SshService
             '-o', 'UserKnownHostsFile=/dev/null',
             '-o', 'LogLevel=ERROR',
             '-o', 'IdentitiesOnly=yes',
-            '-vvv',
         ];
 
         if ($machine->sshKey) {

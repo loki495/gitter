@@ -62,9 +62,9 @@ class GitService
 
         if ($deployment->is_local) {
             $result = $this->runner->run($command);
+        } else {
+            $result = $this->ssh->run($deployment->machine, $command);
         }
-
-        $result = $this->ssh->run($deployment->machine, $command);
 
         $this->lastCommand = $command;
         $this->lastOutput = $result['stdout'];
