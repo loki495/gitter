@@ -1,0 +1,26 @@
+todo
+
+Phase 1 – Core Git & Machine Features
+- Git: implement SetActiveBranchAction, test, integrate in UI
+- Git: one-directional linking of deployments for push/pull
+- Git: get branch status (current branch, ahead/behind, last commit)
+- Machines: get HD space and free memory per partition
+- Machines: add packages manually (apt/pacman)
+- Machines: browse machine to find/add/create repos and deployments
+- SSH: allow forward agents
+
+Phase 2 – UI & UX
+- Rewrite Volt components consistently: x-table, thead, tbody, tr, td
+- Rewrite Volt components consistently: x-button
+- Rewrite Volt components consistently: x-page-wrapper
+- Deployment logs: add better filters
+
+Phase 3 – Documentation & Infrastructure
+- README: what it does, requirements, setup instructions
+- README: Traefik/PiHole setup examples
+- README: Dockerfile and setup scripts
+
+Phase 4 – Optional / Future
+- SSH: optionally allow passwords if needed
+- Git: consider file lists or diffs for branch status
+- Machines: add more automated maintenance or metrics
