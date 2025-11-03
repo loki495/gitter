@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
@@ -45,4 +46,26 @@ it('has expected default attributes', function (): void {
     expect($key->exists)->toBeFalse()
         ->and($key->created_at)->toBeNull()
         ->and($key->updated_at)->toBeNull();
+});
+
+test('we can get all deployments for a key', function (): void {
+    $key = SshKey::factory()->for($this->user)->create();
+
+    $user = User::factory()->create();
+    $key = SshKey::factory()->for($user)->create();
+    $machine = Machine::factory()->for($user)->create();
+    $machine->sshKey()->associate($key);
+    $machine->save();
+
+    // Create deployments that belong to the same machine
+    $deploymentA = Deployment::factory()->for($machine)->for($user)->create([
+        'path' => '/srv/projectA',
+    ]);
+    $deploymentB = Deployment::factory()->for($machine)->for($user)->create([
+        'path' => '/srv/projectB',
+    ]);
+
+    expect($key->deployments)->toHaveCount(2)
+        ->and($key->deployments->pluck('id')->toArray())->toBe([$deploymentA->id, $deploymentB->id]);
+
 });

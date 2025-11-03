@@ -74,13 +74,14 @@ class GitService
             );
         }
 
+        if (! $deployment->machine) {
+            throw new \RuntimeException('Deployment has no machine.');
+        }
+
         if ($deployment->is_local) {
             $result = $this->runner->run($command);
             $this->lastMethod = 'local';
         } else {
-            if (! $deployment->machine) {
-                throw new \RuntimeException('Deployment has no machine.');
-            }
             $result = $this->ssh->run($deployment->machine, $command);
             $this->lastMethod = 'ssh';
         }

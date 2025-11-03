@@ -114,3 +114,16 @@ it('runs local command from a BaseAction subclass', function (): void {
     expect($this->git->lastMethod)->toBe('local');
     expect($this->git->lastExitCode)->toBe(0);
 });
+
+it('throws exception when runCommand is called with a deployment with no machine', function (): void {
+    $this->git = app(GitService::class);
+
+    $deployment = Deployment::factory()->make([
+        'user_id' => $this->user->id,
+        'machine_id' => null,
+        'path' => '/home/andres/www/git',
+        'url' => 'https://example.com',
+        'is_primary' => true,
+    ]);
+    $this->git->status->execute($deployment);
+})->throws(\RuntimeException::class, 'Deployment has no machine.');

@@ -20,7 +20,9 @@ class CheckMachineStatus
     public function execute(Machine $machine): array
     {
         try {
-            $result = $machine->ip === '' ? $this->runner->run(['echo', 'ping']) : $this->ssh->run($machine, ['echo', 'ping']);
+            $result = $machine->ip === ''
+                ? $this->runner->run(['echo', 'ping'])
+                : $this->ssh->run($machine, ['echo', 'ping']);
 
             return [
                 'reachable' => $result['exit_code'] === 0,

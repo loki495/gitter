@@ -58,9 +58,10 @@ final class SshKey extends Model
     }
 
     /**
-     * @return HasManyThrough<Deployment,$this>
+     * @return HasManyThrough<Deployment,Machine,$this>
      */
-    public function deployments() : HasManyThrough {
+    public function deployments(): HasManyThrough
+    {
         return $this->hasManyThrough(Deployment::class, Machine::class);
     }
 }

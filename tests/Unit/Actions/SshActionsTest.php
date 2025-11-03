@@ -167,3 +167,51 @@ it('prevents user from updating someone else’s ssh key', function (): void {
         'type' => 'private',
     ]);
 });
+
+it('throws when key file is not actually stored', function (): void {
+    // Mock the Storage facade directly
+    Storage::shouldReceive('disk')
+        ->andReturnSelf();
+    Storage::shouldReceive('storeAs')
+        ->andReturn('ssh/ghostfile.pub');
+    Storage::shouldReceive('putFileAs')
+        ->andReturn('ssh/ghostfile.pub');
+    Storage::shouldReceive('exists')
+        ->andReturnFalse();
+
+    $file = UploadedFile::fake()->create('badkey.pub', 10, 'text/plain');
+
+    $action = app(CreateSshKey::class);
+
+    $action->execute('Broken Key', $file, 'private');
+
+})->throws(RuntimeException::class, 'Failed to store SSH key.');
+
+it('throws when updated key file fails to store', function (): void {
+    // Mock the Storage facade directly
+    Storage::shouldReceive('disk')
+        ->andReturnSelf();
+    Storage::shouldReceive('storeAs')
+        ->andReturn('ssh/ghostfile.pub');
+    Storage::shouldReceive('putFileAs')
+        ->andReturn('ssh/ghostfile.pub');
+    Storage::shouldReceive('exists')
+        ->andReturnFalse();
+
+    $key = SshKey::factory()->create([
+        'user_id' => $this->user->id,
+        'name' => 'Broken Key',
+        'type' => 'private',
+    ]);
+
+    $file = UploadedFile::fake()->create('badkey.pub', 10, 'text/plain');
+
+    $action = app(UpdateSshKey::class);
+
+    $action->execute($key, [
+        'name' => 'Broken Key',
+        'file' => $file,
+        'type' => 'private',
+    ]);
+
+})->throws(RuntimeException::class, 'Failed to store SSH key.');

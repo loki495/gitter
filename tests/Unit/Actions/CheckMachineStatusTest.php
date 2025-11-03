@@ -6,6 +6,8 @@ use App\Actions\Machine\CheckMachineStatus;
 use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
+use App\Services\CliRunner;
+use App\Services\SshService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(Tests\TestCase::class, RefreshDatabase::class)->in('Unit');
@@ -61,4 +63,27 @@ it('returns unreachable status when SSH command fails', function (): void {
     $result = $action->execute($machine);
 
     expect($result['reachable'])->toBeFalse();
+});
+
+it('handles exceptions thrown during command execution', function (): void {
+    // Arrange
+    $machine = Machine::factory()->create([
+        'ip' => '192.168.0.100',
+    ]);
+
+    $sshService = Mockery::mock(SshService::class);
+    $sshService->shouldReceive('run')
+        ->andThrow(new RuntimeException('Connection failed'));
+
+    $action = new CheckMachineStatus(app(CliRunner::class), $sshService);
+
+    // Act
+    $result = $action->execute($machine);
+
+    // Assert
+    expect($result['reachable'])->toBeFalse();
+    expect($result['stderr'])->toBe('Connection failed');
+    expect($result['stdout'])->toBe('');
+    expect($result['command'])->toBeNull();
+
 });
