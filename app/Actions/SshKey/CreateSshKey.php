@@ -54,7 +54,7 @@ final class CreateSshKey
 
     private function computeFingerprint(string $path): ?string
     {
-        return trim(shell_exec("ssh-keygen -lf {$path} | awk '{print $2}'"));
+        return trim(shell_exec("/usr/bin/ssh-keygen -lf {$path} | awk '{print $2}'"));
     }
 }
 
