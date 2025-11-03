@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use App\Actions\Branch\PullDeploymentBranches;
+use App\Models\SshKey;
 use App\Models\User;
 use App\Models\Machine;
 use App\Models\Deployment;
-use App\Services\GitService;
 use App\Services\SshService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -17,113 +17,102 @@ beforeEach(function (): void {
     $this->actingAs($this->user);
 });
 
-it('pulls branches locally if machine has no IP', function () {
+it('pulls branches locally if machine has no ip', function () {
     $machine = Machine::factory()->create([
         'user_id' => $this->user->id,
-        'ip' => '127.0.0.1',
+        'ip' => '',
+        'ssh_key_id' => null,
+        'ssh_user' => null,
+        'ssh_port' => null,
+        'name' => 'localhost',
     ]);
 
     $deployment = Deployment::factory()->create([
         'user_id' => $this->user->id,
         'machine_id' => $machine->id,
+        'path' => '/home/andres/www/git',
     ]);
 
-    // Inject a mock GitService
-    $mockCli = Mockery::mock(GitService::class);
-    $mockCli->shouldReceive('runCommand')
-        ->once()
-        ->andReturn([
-            'stdout' => 'main
-develop',
-            'exit_code' => 0,
-            'stderr' => '',
-        ]);
-
-    $action = new PullDeploymentBranches($mockCli);
-
-    $branches = $action->execute($deployment);
-
-    expect($branches)->toBe(['master', 'develop']);
-})->only();
-
-it('pulls branches remotely if machine has IP', function () {
-    $deployment = Deployment::factory()->create([
-        'user_id' => $this->user->id,
-        'machine_id' => 1,
-    ]);
-
-    $mock = Mockery::mock(PullDeploymentBranches::class)->makePartial();
-    $mock->shouldAllowMockingProtectedMethods();
-    $mock->shouldReceive('fetchRemoteBranches')->once()->andReturn(['develop']);
-
-    $branches = $mock->execute($deployment);
-
-    expect($branches)->toContain('develop');
-})->skip();
-
-it('pulls branches locally when machine has no IP', function (): void {
-    $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
-    $action = Mockery::mock(PullDeploymentBranches::class)->makePartial();
-
-    $action->shouldAllowMockingProtectedMethods();
-    $action->shouldReceive('fetchLocalBranches')->once()->andReturn(['main', 'develop']);
+    $action = app(PullDeploymentBranches::class);
 
     $branches = $action->execute($deployment);
 
     expect($branches)->toBeArray()
-        ->and($branches)->toContain('main')
-        ->and($branches)->toContain('develop');
-})->skip();
+        ->and($branches[0]['name'])->toBe('git')
+        ->and($branches[1]['name'])->toBe('main');
 
-it('pulls branches remotely when machine has IP', function (): void {
+});
+
+it('pulls branches remotely if machine has ip', function () {
+    $ssh_key = SshKey::factory()->create([
+        'user_id' => 1,
+        'filename' => 'deploy_key',
+        'type' => 'private',
+    ]);
     $machine = Machine::factory()->create([
         'user_id' => $this->user->id,
-        'ip' => '192.168.0.5',
+        'ip' => '192.168.1.145',
+        'ssh_user' => 'andres',
+        'ssh_key_id' => $ssh_key->id,
+        'ssh_port' => 22222,
     ]);
-
     $deployment = Deployment::factory()->create([
         'user_id' => $this->user->id,
         'machine_id' => $machine->id,
+        'path' => '/home/andres/www/git',
     ]);
 
-    $sshMock = Mockery::mock(SshService::class);
-    $sshMock->shouldReceive('run')->once()->andReturn("main\ndevelop");
-
-    app()->instance(SshService::class, $sshMock);
-
-    $action = new PullDeploymentBranches();
+    $action = app(PullDeploymentBranches::class);
     $branches = $action->execute($deployment);
 
-    expect($branches)->toContain('main')->and($branches)->toContain('develop');
-})->skip();
+    expect($branches)->toBeArray()
+        ->and($branches[0]['name'])->toBe('git')
+        ->and($branches[1]['name'])->toBe('main');
+});
+
 
 it('throws an exception if remote fetch fails', function (): void {
+    $ssh_key = SshKey::factory()->create([
+        'user_id' => 1,
+        'filename' => 'deploy_key',
+        'type' => 'private',
+    ]);
     $machine = Machine::factory()->create([
         'user_id' => $this->user->id,
-        'ip' => '192.168.0.6',
+        'ip' => '192.168.1.3',
+        'ssh_user' => 'andres',
+        'ssh_key_id' => $ssh_key->id,
+        'ssh_port' => 22222,
+    ]);
+    $deployment = Deployment::factory()->create([
+        'user_id' => $this->user->id,
+        'machine_id' => $machine->id,
+        'path' => '/unknown/path',
+    ]);
+
+    $action = app(PullDeploymentBranches::class);
+
+    expect(fn () => $action->execute($deployment))->toThrow(Exception::class);
+});
+
+it('throws an exception if local fetch fails', function (): void {
+    $machine = Machine::factory()->create([
+        'user_id' => $this->user->id,
+        'ip' => '',
+        'ssh_key_id' => null,
+        'ssh_user' => null,
+        'ssh_port' => null,
+        'name' => 'localhost',
     ]);
 
     $deployment = Deployment::factory()->create([
         'user_id' => $this->user->id,
         'machine_id' => $machine->id,
+        'path' => '/unknown/path',
     ]);
 
-    $sshMock = Mockery::mock(SshService::class);
-    $sshMock->shouldReceive('run')->andThrow(new Exception('SSH failure'));
-    app()->instance(SshService::class, $sshMock);
-
-    $action = new PullDeploymentBranches();
+    $action = app(PullDeploymentBranches::class);
 
     expect(fn () => $action->execute($deployment))->toThrow(Exception::class);
-})->skip();
-
-it('throws an exception if local fetch fails', function (): void {
-    $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
-
-    $action = Mockery::mock(PullDeploymentBranches::class)->makePartial();
-    $action->shouldAllowMockingProtectedMethods();
-    $action->shouldReceive('fetchLocalBranches')->andThrow(new Exception('Local git error'));
-
-    expect(fn () => $action->execute($deployment))->toThrow(Exception::class);
-})->skip();
+});
 
