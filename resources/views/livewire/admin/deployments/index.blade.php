@@ -44,11 +44,17 @@ new class extends Component {
 
         try {
             $branches = app(PullDeploymentBranches::class)->execute($deployment);
-            dd($branches);
+            $branches_str = ' - '. implode("\n - ", collect($branches)->pluck('name')->toArray());
 
             $this->dispatch('notify', [
                 'type' => 'success',
-                'message' => "Branches pulled successfully for deployment '{$deployment->path}'.",
+                'message' => "Branches pulled successfully
+
+Machine: {$deployment->machine->name}
+Website: {$deployment->website->name}
+Path: {$deployment->path}'
+
+Branches found:\n{$branches_str}",
             ]);
 
             // Optionally refresh branches count or reload deployment info
