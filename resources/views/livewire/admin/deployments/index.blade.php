@@ -13,7 +13,7 @@ new class extends Component {
     public function mount(Website $website): void
     {
         $this->website = $website;
-        $this->deployments = Deployment::with(['website', 'machine'])->withCount('branches')->get()->toArray();
+        $this->deployments = Deployment::with(['website', 'machine', 'machine.sshKey'])->withCount('branches')->get()->toArray();
     }
 
     public function deleteDeployment(int $id): void
@@ -74,6 +74,7 @@ Branches found:\n{$branches_str}",
         <thead class="bg-zinc-600">
             <tr class="text-left text-zinc-300">
                 <th class="px-4 py-2">Machine</th>
+                <th class="px-4 py-2">Ssh Key</th>
                 <th class="px-4 py-2">Path</th>
                 <th class="px-4 py-2">URL</th>
                 <th class="px-4 py-2">Branches</th>
@@ -85,6 +86,7 @@ Branches found:\n{$branches_str}",
             @foreach($deployments as $deployment)
             <tr class="hover:bg-zinc-700">
                 <td class="px-4 py-2">{{ $deployment['machine']['name'] ?? '-' }}</td>
+                <td class="px-4 py-2">{{ $deployment['machine']['ssh_key']['name'] }}</td>
                 <td class="px-4 py-2">{{ $deployment['path'] }}</td>
                 <td class="px-4 py-2">
                     @if($deployment['url'])
