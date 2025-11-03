@@ -10,9 +10,11 @@ use App\Services\GitService;
 abstract class BaseAction
 {
     protected array $arguments = [];
+    protected $git_cmd = '';
 
     public function __construct(protected GitService $git)
     {
+        $this->git_cmd = trim(shell_exec('which git'), " \n");
     }
 
     /**

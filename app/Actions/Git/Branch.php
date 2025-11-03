@@ -14,7 +14,7 @@ class Branch extends BaseAction
             'cd',
             $deployment->path,
             '&&',
-            'git',
+            $this->git_cmd,
             'branch'
         ];
     }
