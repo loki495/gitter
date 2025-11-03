@@ -7,7 +7,6 @@ use App\Models\SshKey;
 use App\Models\User;
 use App\Models\Machine;
 use App\Models\Deployment;
-use App\Services\SshService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);

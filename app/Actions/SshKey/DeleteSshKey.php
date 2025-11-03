@@ -13,7 +13,7 @@ final class DeleteSshKey
     public function execute(SshKey $key): bool
     {
         Gate::authorize('delete', $key);
-        Storage::delete('ssh/' . $key->filename);
+        Storage::delete('ssh/' . $key->user_id . '/' . $key->filename);
         return(bool)$key->delete();
     }
 }

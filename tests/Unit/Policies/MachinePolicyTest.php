@@ -6,33 +6,29 @@ use App\Models\Machine;
 use App\Models\User;
 use App\Policies\MachinePolicy;
 
-it('allows a user to view, update, delete their own machine', function () {
-    $user = User::factory()->create();
-    $machine = Machine::factory()->create(['user_id' => $user->id]);
+beforeEach(function () {
+    $this->user = new User();
+    $this->user->id = 1;
 
-    $policy = new MachinePolicy();
-
-    expect($policy->view($user, $machine))->toBeTrue()
-        ->and($policy->update($user, $machine))->toBeTrue()
-        ->and($policy->delete($user, $machine))->toBeTrue();
+    $this->otherUser = new User();
+    $this->otherUser->id = 2;
 });
 
-it('denies a user from viewing, updating, deleting machines they do not own', function () {
-    $user = User::factory()->create();
-    $otherUser = User::factory()->create();
-    $machine = Machine::factory()->create(['user_id' => $otherUser->id]);
+it('allows owner to manage machine and creation for any user', function () {
+    $machine = new Machine();
+    $machine->user_id = $this->user->id;
+
+    $nonOwnerMachine = new Machine();
+    $nonOwnerMachine->user_id = $this->otherUser->id;
 
     $policy = new MachinePolicy();
 
-    expect($policy->view($user, $machine))->toBeFalse()
-        ->and($policy->update($user, $machine))->toBeFalse()
-        ->and($policy->delete($user, $machine))->toBeFalse();
-});
-
-it('allows any user to create a machine', function () {
-    $user = User::factory()->create();
-    $policy = new MachinePolicy();
-
-    expect($policy->create($user))->toBeTrue();
+    expect($policy->view($this->user, $machine))->toBeTrue()
+        ->and($policy->update($this->user, $machine))->toBeTrue()
+        ->and($policy->delete($this->user, $machine))->toBeTrue()
+        ->and($policy->view($this->user, $nonOwnerMachine))->toBeFalse()
+        ->and($policy->update($this->user, $nonOwnerMachine))->toBeFalse()
+        ->and($policy->delete($this->user, $nonOwnerMachine))->toBeFalse()
+        ->and($policy->create($this->user))->toBeTrue();
 });
 

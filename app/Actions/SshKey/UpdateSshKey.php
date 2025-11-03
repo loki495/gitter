@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\SshKey;
 
 use App\Models\SshKey;
+use App\Services\SshFingerprintService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -14,12 +15,14 @@ use Illuminate\Validation\ValidationException;
 
 final class UpdateSshKey
 {
+    public function __construct(private SshFingerprintService $fingerprints) {}
+
     /**
      * Create or update an SSH key.
      *
      * @param  array{name: string, type: string, file?: UploadedFile|null}  $data
      */
-    public function execute(?SshKey $key, array $data): SshKey
+    public function execute(SshKey $key, array $data): SshKey
     {
         Gate::authorize('update', $key);
 
@@ -36,37 +39,25 @@ final class UpdateSshKey
             $file = $data['file'];
             $filename = $file->getClientOriginalName();
 
-            if (!preg_match('/(\\.(pem|key|pub)|[^\\.])$/', $filename)) {
-                throw ValidationException::withMessages([
-                    'file' => 'Invalid file type. Allowed extensions: .pem, .key, .pub, or no extensions',
-                ]);
+            if (! in_array($file->getClientOriginalExtension(), ['pem', 'key', 'pub', ''], true)) {
+                throw new \RuntimeException('Invalid file type.');
             }
 
             $storedPath = $file->storeAs('ssh/' . Auth::id(), $filename);
             $absolute = Storage::path($storedPath);
+            $fingerprint = $this->fingerprints->compute($absolute);
 
-            $fingerprint = $this->computeFingerprint($absolute);
             File::chmod($absolute, 0600);
-        }
-
-        if (!$key) {
-            $key = new SshKey();
-            $key->user_id = Auth::id();
         }
 
         $key->fill([
             'name' => $data['name'],
             'type' => $data['type'],
             'filename' => $filename,
-            'fingerprint' => $fingerprint,
+            'fingerprint' => $fingerprint
         ])->save();
 
         return $key;
-    }
-
-    private function computeFingerprint(string $path): ?string
-    {
-        return trim(shell_exec("ssh-keygen -lf {$path} | awk '{print $2}'"));
     }
 }
 

@@ -14,6 +14,7 @@ class GitService
     public $lastCommand = null;
     public $lastOutput = null;
     public $lastExitCode = null;
+    public $lastMethod = null;
 
     public function __construct(
         protected SshService $ssh,
@@ -48,7 +49,9 @@ class GitService
 
         $allowed = false;
         foreach ($backtrace as $frame) {
-            if (isset($frame['class']) && $frame['class'] === BaseAction::class) {
+            if (isset($frame['class']) && $frame['class'] === BaseAction::class ||
+                is_subclass_of($frame['class'], BaseAction::class)
+                ) {
                 $allowed = true;
                 break;
             }
@@ -62,8 +65,10 @@ class GitService
 
         if ($deployment->is_local) {
             $result = $this->runner->run($command);
+            $this->lastMethod = 'local';
         } else {
             $result = $this->ssh->run($deployment->machine, $command);
+            $this->lastMethod = 'ssh';
         }
 
         $this->lastCommand = $command;

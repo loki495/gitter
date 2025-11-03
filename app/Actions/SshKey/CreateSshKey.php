@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\SshKey;
 
 use App\Models\SshKey;
+use App\Services\SshFingerprintService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -14,6 +15,8 @@ use RuntimeException;
 
 final class CreateSshKey
 {
+    public function __construct(private SshFingerprintService $fingerprints) {}
+
     public function execute(string $name, UploadedFile $file, string $type): SshKey
     {
         Gate::authorize('create', SshKey::class);
@@ -37,24 +40,17 @@ final class CreateSshKey
 
         $fullPath = Storage::path($storedPath);
         File::chmod(dirname($fullPath), 0700);
-
-        $fingerprint = $this->computeFingerprint($fullPath);
         File::chmod($fullPath, 0600);
 
         $key = SshKey::create([
             'name' => $name,
             'filename' => $filename,
             'type' => $type,
-            'fingerprint' => $fingerprint,
+            'fingerprint' => $this->fingerprints->compute($fullPath),
             'user_id' => Auth::id(),
         ]);
 
         return $key;
-    }
-
-    private function computeFingerprint(string $path): ?string
-    {
-        return trim(shell_exec("/usr/bin/ssh-keygen -lf {$path} | awk '{print $2}'"));
     }
 }
 

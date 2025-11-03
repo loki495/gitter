@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(\App\Services\CliRunner::class);
         $this->app->singleton(\App\Services\SshService::class);
+        $this->app->singleton(\App\Services\GitService::class);
     }
 
     /**
