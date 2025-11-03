@@ -33,4 +33,3 @@ final class CreateBranchesTable extends Migration
         Schema::dropIfExists('branches');
     }
 }
-

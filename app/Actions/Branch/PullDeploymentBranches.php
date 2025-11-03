@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Branch;
 
-use App\Models\Deployment;
 use App\Models\Branch;
+use App\Models\Deployment;
 use App\Models\DeploymentLog;
 use App\Services\GitService;
 
@@ -37,7 +37,7 @@ final readonly class PullDeploymentBranches
             $branches[] = [
                 'name' => str_starts_with($name, 'remotes/') ? substr($name, 9) : $name,
                 'is_active' => $isActive,
-                'is_tracking_remote' => str_starts_with($name, 'remotes/')
+                'is_tracking_remote' => str_starts_with($name, 'remotes/'),
             ];
         }
 
@@ -63,7 +63,7 @@ final readonly class PullDeploymentBranches
             'output' => $this->git->lastOutput,
             'exit_code' => $this->git->lastExitCode,
             'executed_at' => now(),
-            'duration_ms' => (int)((microtime(true) - $start) * 1000),
+            'duration_ms' => (int) ((microtime(true) - $start) * 1000),
         ]);
 
         return $models;

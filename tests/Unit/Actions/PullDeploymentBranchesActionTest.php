@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use App\Actions\Branch\PullDeploymentBranches;
+use App\Models\Deployment;
+use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
-use App\Models\Machine;
-use App\Models\Deployment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -69,7 +69,6 @@ it('pulls branches remotely if machine has ip', function (): void {
         ->and($branches[1]['name'])->toBe('main');
 });
 
-
 it('throws an exception if remote fetch fails', function (): void {
     $ssh_key = SshKey::factory()->create([
         'user_id' => 1,
@@ -114,4 +113,3 @@ it('throws an exception if local fetch fails', function (): void {
 
     expect(fn () => $action->execute($deployment))->toThrow(Exception::class);
 });
-

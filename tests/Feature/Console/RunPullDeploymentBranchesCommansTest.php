@@ -83,4 +83,3 @@ it('runs the PullDeploymentBranches action successfully', function (): void {
         ->expectsOutput('✅ PullDeploymentBranches completed successfully.')
         ->assertExitCode(Command::SUCCESS);
 });
-

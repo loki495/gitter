@@ -8,21 +8,21 @@ use App\Models\User;
 use App\Policies\BranchPolicy;
 
 beforeEach(function (): void {
-    $this->user = new User();
+    $this->user = new User;
     $this->user->id = 1;
 
-    $this->otherUser = new User();
+    $this->otherUser = new User;
     $this->otherUser->id = 2;
 });
 
 it('allows owner to manage branch', function (): void {
-    $deployment = new Deployment();
+    $deployment = new Deployment;
     $deployment->user_id = $this->user->id;
 
-    $branch = new Branch();
+    $branch = new Branch;
     $branch->deployment = $deployment;
 
-    $policy = new BranchPolicy();
+    $policy = new BranchPolicy;
 
     expect($policy->view($this->user, $branch))->toBeTrue()
         ->and($policy->create($this->user, $deployment))->toBeTrue()
@@ -31,17 +31,16 @@ it('allows owner to manage branch', function (): void {
 });
 
 it('denies non-owner', function (): void {
-    $deployment = new Deployment();
+    $deployment = new Deployment;
     $deployment->user_id = $this->otherUser->id;
 
-    $branch = new Branch();
+    $branch = new Branch;
     $branch->deployment = $deployment;
 
-    $policy = new BranchPolicy();
+    $policy = new BranchPolicy;
 
     expect($policy->view($this->user, $branch))->toBeFalse()
         ->and($policy->create($this->user, $deployment))->toBeFalse()
         ->and($policy->update($this->user, $branch))->toBeFalse()
         ->and($policy->delete($this->user, $branch))->toBeFalse();
 });
-

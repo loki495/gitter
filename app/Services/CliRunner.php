@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -20,14 +21,14 @@ class CliRunner
         $output = [];
         $exitCode = 0;
 
-        exec($command . ' 2>&1', $output, $exitCode);
+        exec($command.' 2>&1', $output, $exitCode);
 
         $stdout = implode("\n", $output);
 
         return [
-            'stdout'      => $stdout,
-            'stderr'      => $exitCode === 0 ? '' : $stdout,
-            'exit_code'   => $exitCode,
+            'stdout' => $stdout,
+            'stderr' => $exitCode === 0 ? '' : $stdout,
+            'exit_code' => $exitCode,
             'duration_ms' => 0,
         ];
     }
@@ -52,4 +53,3 @@ class CliRunner
         return implode(' ', $escaped);
     }
 }
-

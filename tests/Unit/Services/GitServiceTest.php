@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Actions\Git\BaseAction;
+use App\Models\Deployment;
+use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
 use App\Services\GitService;
-use App\Services\SshService;
-use App\Services\CliRunner;
-use App\Models\Deployment;
-use App\Models\Machine;
-use App\Actions\Git\BaseAction;
 
 beforeEach(function (): void {
     $this->user = User::factory()->create();
@@ -37,9 +35,7 @@ beforeEach(function (): void {
 // Named class extending BaseAction for testing
 class TestGitAction extends BaseAction
 {
-    public function __construct(public GitService $git)
-    {
-    }
+    public function __construct(public GitService $git) {}
 
     public function executeCommand(array $command, Deployment $deployment): array
     {
@@ -54,7 +50,7 @@ class TestGitAction extends BaseAction
             $deployment->path,
             '&&',
             'git',
-            'status'
+            'status',
         ];
     }
 
@@ -90,7 +86,7 @@ it('runs ssh command when deployment is not local', function (): void {
         $this->deployment->path,
         '&&',
         'git',
-        'status'
+        'status',
     ]);
     expect($this->git->lastOutput)->toContain('On branch ');
     expect($this->git->lastExitCode)->toBe(0);
@@ -112,10 +108,9 @@ it('runs local command from a BaseAction subclass', function (): void {
         $this->deployment->path,
         '&&',
         'git',
-        'status'
+        'status',
     ]);
 
     expect($this->git->lastMethod)->toBe('local');
     expect($this->git->lastExitCode)->toBe(0);
 });
-

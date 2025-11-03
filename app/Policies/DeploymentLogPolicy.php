@@ -29,4 +29,3 @@ final class DeploymentLogPolicy extends BasePolicy
         return $log->deployment && $log->deployment->user_id === $user->id;
     }
 }
-

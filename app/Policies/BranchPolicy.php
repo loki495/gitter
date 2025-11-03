@@ -39,4 +39,3 @@ final class BranchPolicy extends BasePolicy
         return $branch->deployment && $branch->deployment->user_id === $user->id;
     }
 }
-

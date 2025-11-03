@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Website;
 
 use App\Models\Website;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;

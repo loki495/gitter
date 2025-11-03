@@ -7,7 +7,6 @@ use App\Models\Deployment;
 use App\Models\DeploymentLog;
 use App\Services\CliRunner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery\MockInterface;
 
 uses(RefreshDatabase::class);
 
@@ -34,7 +33,7 @@ it('records a log after running a cli command via CliRunner', function (): void 
     $runner = app(CliRunner::class);
     $result = $runner->run('git pull');
 
-    $action = new RecordDeploymentLog();
+    $action = new RecordDeploymentLog;
     $log = $action->execute(
         $deployment,
         'pull',
@@ -48,4 +47,3 @@ it('records a log after running a cli command via CliRunner', function (): void 
     expect($log->exit_code)->toEqual(0);
     expect($log->duration_ms)->toBeInt();
 });
-

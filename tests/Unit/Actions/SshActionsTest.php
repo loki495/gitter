@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Actions\SshKey\CreateSshKey;
-use App\Actions\SshKey\UpdateSshKey;
 use App\Actions\SshKey\DeleteSshKey;
+use App\Actions\SshKey\UpdateSshKey;
 use App\Models\SshKey;
 use App\Models\User;
 use App\Services\SshFingerprintService;
@@ -167,4 +167,3 @@ it('prevents user from updating someone else’s ssh key', function (): void {
         'type' => 'private',
     ]);
 });
-

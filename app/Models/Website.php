@@ -39,5 +39,4 @@ final class Website extends Model
     {
         return $this->belongsTo(User::class);
     }
-
 }

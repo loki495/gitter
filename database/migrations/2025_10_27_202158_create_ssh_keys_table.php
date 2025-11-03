@@ -1,18 +1,16 @@
 <?php
 
-
 declare(strict_types=1);
-
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-
-return new class() extends Migration {
+return new class extends Migration
+{
     /**
-* Run the migrations.
-*/
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('ssh_keys', function (Blueprint $table): void {
@@ -26,7 +24,6 @@ return new class() extends Migration {
             $table->timestamps();
         });
 
-
         // Ensure directory exists with correct perms at migration time if running locally
         // (This is only best-effort — deployment should ensure the folder exists and is owned by web user)
         if (! file_exists(storage_path('ssh'))) {
@@ -35,10 +32,9 @@ return new class() extends Migration {
         }
     }
 
-
     /**
-* Reverse the migrations.
-*/
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('ssh_keys');

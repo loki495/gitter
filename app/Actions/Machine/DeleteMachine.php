@@ -15,6 +15,7 @@ class DeleteMachine
     public function execute(Machine $machine): bool
     {
         Gate::authorize('delete', $machine);
+
         return (bool) $machine->delete();
     }
 }

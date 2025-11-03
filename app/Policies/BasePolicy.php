@@ -16,4 +16,3 @@ abstract class BasePolicy
         return $model->user_id === $user->id;
     }
 }
-

@@ -3,13 +3,11 @@
 declare(strict_types=1);
 
 use App\Actions\Deployment\RecordDeploymentLog;
-use App\Models\User;
 use App\Models\Deployment;
 use App\Models\DeploymentLog;
-use Carbon\Carbon;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -20,7 +18,7 @@ beforeEach(function (): void {
 
 it('records a deployment log successfully', function (): void {
     $deployment = Deployment::factory()->create(['user_id' => $this->user->id]);
-    $action = new RecordDeploymentLog();
+    $action = new RecordDeploymentLog;
 
     $timestamp = CarbonImmutable::now();
 
@@ -33,7 +31,6 @@ it('records a deployment log successfully', function (): void {
         100,
         $timestamp
     );
-
 
     expect($log)->toBeInstanceOf(DeploymentLog::class)
         ->and($log->deployment_id)->toBe($deployment->id)

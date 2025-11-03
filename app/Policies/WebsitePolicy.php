@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Policies;
@@ -47,4 +48,3 @@ final class WebsitePolicy extends BasePolicy
         return $this->owns($user, $website);
     }
 }
-

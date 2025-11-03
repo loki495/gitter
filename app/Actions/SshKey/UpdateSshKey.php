@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 
 final readonly class UpdateSshKey
 {
@@ -43,7 +42,7 @@ final readonly class UpdateSshKey
                 throw new \RuntimeException('Invalid file type.');
             }
 
-            $storedPath = $file->storeAs('ssh/' . Auth::id(), $filename);
+            $storedPath = $file->storeAs('ssh/'.Auth::id(), $filename);
             $absolute = Storage::path($storedPath);
             $fingerprint = $this->fingerprints->compute($absolute);
 
@@ -54,10 +53,9 @@ final readonly class UpdateSshKey
             'name' => $data['name'],
             'type' => $data['type'],
             'filename' => $filename,
-            'fingerprint' => $fingerprint
+            'fingerprint' => $fingerprint,
         ])->save();
 
         return $key;
     }
 }
-

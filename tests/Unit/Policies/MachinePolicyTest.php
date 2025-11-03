@@ -7,21 +7,21 @@ use App\Models\User;
 use App\Policies\MachinePolicy;
 
 beforeEach(function (): void {
-    $this->user = new User();
+    $this->user = new User;
     $this->user->id = 1;
 
-    $this->otherUser = new User();
+    $this->otherUser = new User;
     $this->otherUser->id = 2;
 });
 
 it('allows owner to manage machine and creation for any user', function (): void {
-    $machine = new Machine();
+    $machine = new Machine;
     $machine->user_id = $this->user->id;
 
-    $nonOwnerMachine = new Machine();
+    $nonOwnerMachine = new Machine;
     $nonOwnerMachine->user_id = $this->otherUser->id;
 
-    $policy = new MachinePolicy();
+    $policy = new MachinePolicy;
 
     expect($policy->view($this->user, $machine))->toBeTrue()
         ->and($policy->update($this->user, $machine))->toBeTrue()
@@ -31,4 +31,3 @@ it('allows owner to manage machine and creation for any user', function (): void
         ->and($policy->delete($this->user, $nonOwnerMachine))->toBeFalse()
         ->and($policy->create($this->user))->toBeTrue();
 });
-

@@ -15,7 +15,7 @@ class Status extends BaseAction
             $deployment->path,
             '&&',
             $this->git_cmd,
-            'status'
+            'status',
         ];
     }
 
@@ -24,4 +24,3 @@ class Status extends BaseAction
         return trim($output, " \t\n\r\0\x0B");
     }
 }
-

@@ -47,4 +47,3 @@ final class DeploymentLog extends Model
         return $this->belongsTo(Deployment::class);
     }
 }
-

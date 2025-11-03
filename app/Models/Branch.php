@@ -42,4 +42,3 @@ final class Branch extends Model
         return $this->belongsTo(Deployment::class);
     }
 }
-

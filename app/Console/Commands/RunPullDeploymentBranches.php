@@ -6,7 +6,6 @@ namespace App\Console\Commands;
 
 use App\Actions\Branch\PullDeploymentBranches;
 use App\Models\Deployment;
-use App\Services\GitService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 
@@ -43,6 +42,7 @@ final class RunPullDeploymentBranches extends Command
 
         if (! $deployment) {
             $this->error("Deployment with ID {$deploymentId} not found.");
+
             return self::FAILURE;
         }
 
@@ -57,11 +57,12 @@ final class RunPullDeploymentBranches extends Command
         } catch (\Throwable $e) {
             $this->error("❌ Action failed: {$e->getMessage()}");
             $this->info($e->getTraceAsString());
+
             return self::FAILURE;
         }
 
         $this->info('✅ PullDeploymentBranches completed successfully.');
+
         return self::SUCCESS;
     }
 }
-

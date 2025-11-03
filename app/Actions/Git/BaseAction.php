@@ -10,6 +10,7 @@ use App\Services\GitService;
 abstract class BaseAction
 {
     protected array $arguments = [];
+
     protected string $git_cmd;
 
     public function __construct(protected GitService $git)
@@ -45,7 +46,7 @@ abstract class BaseAction
         $output = $this->git->runCommand($command, $deployment);
 
         // Child class parses output
-        if($output['exit_code'] === 0) {
+        if ($output['exit_code'] === 0) {
             return $this->parseOutput($output['stdout']);
         }
 

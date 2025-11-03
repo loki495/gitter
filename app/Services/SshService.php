@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Machine;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class SshService
@@ -24,7 +23,7 @@ class SshService
             '-F', '/dev/null',
             '-o', 'StrictHostKeyChecking=no',
             '-o', 'ConnectTimeout=5',
-            //'-o', 'KexAlgorithms=diffie-hellman-group-exchange-sha256'
+            // '-o', 'KexAlgorithms=diffie-hellman-group-exchange-sha256'
             '-o', 'UserKnownHostsFile=/dev/null',
             '-o', 'LogLevel=ERROR',
             '-o', 'IdentitiesOnly=yes',
@@ -32,7 +31,7 @@ class SshService
 
         if ($machine->sshKey) {
             $sshCommand[] = '-i';
-            $sshCommand[] = Storage::path('ssh/'.$machine->sshKey->user->id) . '/' . $machine->sshKey->filename;
+            $sshCommand[] = Storage::path('ssh/'.$machine->sshKey->user->id).'/'.$machine->sshKey->filename;
         }
 
         if ($machine->ssh_port) {
@@ -42,11 +41,11 @@ class SshService
 
         $sshCommand[] = sprintf('%s@%s', $machine->ssh_user, $machine->ip ?? '127.0.0.1');
 
-        if  (is_array($command)) {
+        if (is_array($command)) {
             $sshCommand = implode(' ', $sshCommand);
-            $sshCommand .= ' "' . implode(' ', $command).'"';
-        } else{
-            $sshCommand[] = '"' . $command . '"';
+            $sshCommand .= ' "'.implode(' ', $command).'"';
+        } else {
+            $sshCommand[] = '"'.$command.'"';
         }
 
         return $this->runner->run($sshCommand);

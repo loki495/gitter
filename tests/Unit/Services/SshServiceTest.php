@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
-use App\Services\CliRunner;
 use App\Services\SshService;
 
 beforeEach(function (): void {
@@ -24,7 +23,7 @@ it('builds ssh command and calls runner', function (): void {
         'ip' => '192.168.1.145',
         'ssh_key_id' => $sshKey->id,
         'ssh_port' => 22222,
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
 
     $ssh = app(SshService::class);

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
-use App\Models\Machine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -40,7 +40,7 @@ it('casts type to string and fingerprint to nullable string', function (): void 
 });
 
 it('has expected default attributes', function (): void {
-    $key = new SshKey();
+    $key = new SshKey;
 
     expect($key->exists)->toBeFalse()
         ->and($key->created_at)->toBeNull()

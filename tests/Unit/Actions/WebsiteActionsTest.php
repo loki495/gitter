@@ -7,7 +7,6 @@ use App\Actions\Website\DeleteWebsite;
 use App\Actions\Website\UpdateWebsite;
 use App\Models\User;
 use App\Models\Website;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 
 beforeEach(function (): void {
@@ -81,4 +80,4 @@ it('throws when deleting someone else website', function (): void {
 
     $action = new DeleteWebsite;
     $action->execute($website);
-})->throws("This action is unauthorized.");
+})->throws('This action is unauthorized.');

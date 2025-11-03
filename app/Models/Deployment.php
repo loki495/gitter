@@ -77,9 +77,9 @@ final class Deployment extends Model
         return $this->hasMany(DeploymentLog::class);
     }
 
-     // Example: treat 'machine_id' == null as local
+    // Example: treat 'machine_id' == null as local
     public function getIsLocalAttribute(): bool
     {
-        return !$this->machine->ip;
+        return ! $this->machine->ip;
     }
 }

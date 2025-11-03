@@ -17,7 +17,7 @@ beforeEach(function (): void {
 it('can create a machine successfully', function (): void {
 
     $sshKey = SshKey::factory()->create([
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
 
     $action = new CreateMachine;
@@ -49,7 +49,7 @@ it('fails to create a machine with missing required fields', function (): void {
 
 it('can update a machine successfully', function (): void {
     $sshKey = SshKey::factory()->create([
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
 
     $machine = Machine::factory()->create([
@@ -78,7 +78,7 @@ it('can update a machine successfully', function (): void {
 it('fails to update a machine with invalid data', function (): void {
 
     $sshKey = SshKey::factory()->create([
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
 
     $machine = Machine::factory()->create([

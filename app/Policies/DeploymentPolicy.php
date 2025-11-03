@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Deployment;
+use App\Models\User;
 
 /**
  * Policy for Deployment model.

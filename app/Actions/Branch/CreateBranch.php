@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 final class CreateBranch
 {
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function execute(Deployment $deployment, array $data): Branch
     {
@@ -23,7 +23,7 @@ final class CreateBranch
                 'required',
                 'string',
                 'regex:/^[A-Za-z0-9._\-\/]+$/',
-                'unique:branches,name,NULL,id,deployment_id,' . $deployment->id,
+                'unique:branches,name,NULL,id,deployment_id,'.$deployment->id,
             ],
             'is_active' => ['sometimes', 'boolean'],
             'is_tracking_remote' => ['sometimes', 'boolean'],
@@ -34,11 +34,10 @@ final class CreateBranch
         return Branch::create([
             'deployment_id' => $deployment->id,
             'name' => $validated['name'],
-            'is_active' => (bool)($validated['is_active'] ?? false),
-            'is_tracking_remote' => (bool)($validated['is_tracking_remote'] ?? false),
+            'is_active' => (bool) ($validated['is_active'] ?? false),
+            'is_tracking_remote' => (bool) ($validated['is_tracking_remote'] ?? false),
             'last_commit' => $validated['last_commit'] ?? null,
             'last_checked_at' => isset($validated['last_checked_at']) ? now() : null,
         ]);
     }
 }
-

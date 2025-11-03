@@ -14,7 +14,7 @@ beforeEach(function (): void {
 
 it('can create a machine with minimal required fields', function (): void {
     $sshKey = SshKey::factory()->create([
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
     ]);
 
     $machine = Machine::create([

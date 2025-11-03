@@ -53,7 +53,7 @@ class Machine extends Model
     /**
      * @return HasOne<SshKey, $this>
      */
-    public function sshKey() : BelongsTo
+    public function sshKey(): BelongsTo
     {
         return $this->belongsTo(SshKey::class);
     }

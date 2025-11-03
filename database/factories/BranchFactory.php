@@ -32,4 +32,3 @@ final class BranchFactory extends Factory
         return $this->state(fn () => ['is_active' => true]);
     }
 }
-

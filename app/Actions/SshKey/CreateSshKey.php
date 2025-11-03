@@ -8,9 +8,9 @@ use App\Models\SshKey;
 use App\Services\SshFingerprintService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
 use RuntimeException;
 
 final readonly class CreateSshKey
@@ -36,7 +36,7 @@ final readonly class CreateSshKey
         }
 
         $filename = $file->getClientOriginalName();
-        $storedPath = $file->storeAs('ssh/' . Auth::id(), $filename);
+        $storedPath = $file->storeAs('ssh/'.Auth::id(), $filename);
 
         $fullPath = Storage::path($storedPath);
         File::chmod(dirname($fullPath), 0700);
@@ -51,4 +51,3 @@ final readonly class CreateSshKey
         ]);
     }
 }
-

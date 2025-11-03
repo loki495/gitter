@@ -6,14 +6,15 @@ namespace App\Services;
 
 use App\Actions\Git\BaseAction;
 use App\Models\Deployment;
-use function Laravel\Prompts\warning;
 
 class GitService
 {
-
     public $lastCommand;
+
     public $lastOutput;
+
     public $lastExitCode;
+
     public $lastMethod;
 
     public function __construct(
@@ -26,9 +27,9 @@ class GitService
      */
     public function __get(string $name): BaseAction
     {
-        $class = "\\App\\Actions\\Git\\" . ucfirst($name);
+        $class = '\\App\\Actions\\Git\\'.ucfirst($name);
 
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             throw new \RuntimeException("Git action class $class does not exist.");
         }
 
@@ -39,7 +40,8 @@ class GitService
      * Run git command either remotely or locally
      *
      * Called by BaseAction::execute()
-     * @param array<int,mixed> $command
+     *
+     * @param  array<int,mixed>  $command
      * @return array{stdout:string,stderr:string,exit_code:int}
      */
     public function runCommand(array $command, Deployment $deployment): array
@@ -51,7 +53,7 @@ class GitService
         foreach ($backtrace as $frame) {
             if (isset($frame['class']) && $frame['class'] === BaseAction::class ||
                 is_subclass_of($frame['class'], BaseAction::class)
-                ) {
+            ) {
                 $allowed = true;
                 break;
             }
@@ -77,5 +79,4 @@ class GitService
 
         return $result;
     }
-
 }

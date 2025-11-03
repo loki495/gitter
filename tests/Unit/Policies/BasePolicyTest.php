@@ -6,14 +6,15 @@ use App\Models\User;
 use App\Policies\BasePolicy;
 
 it('correctly checks ownership', function (): void {
-    $user = new User();
+    $user = new User;
     $user->id = 1;
 
-    $otherUser = new User();
+    $otherUser = new User;
     $otherUser->id = 2;
 
     // Minimal concrete class to test protected method
-    $policy = new class extends BasePolicy {
+    $policy = new class extends BasePolicy
+    {
         public function testOwns(User $user, mixed $model): bool
         {
             return $this->owns($user, $model);
@@ -21,11 +22,12 @@ it('correctly checks ownership', function (): void {
     };
 
     // Test model with user_id
-    $model = new class {
+    $model = new class
+    {
         public $user_id;
     };
 
-    $m = new $model();
+    $m = new $model;
     $m->user_id = 1;
     expect($policy->testOwns($user, $m))->toBeTrue();
 
@@ -36,4 +38,3 @@ it('correctly checks ownership', function (): void {
     $m->user_id = null;
     expect($policy->testOwns($user, $m))->toBeFalse();
 });
-

@@ -25,4 +25,3 @@ class SshFingerprintService
         return $output !== '' && $output !== '0' ? trim($output) : null;
     }
 }
-

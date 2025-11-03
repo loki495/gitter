@@ -41,4 +41,3 @@ final class MachinePolicy extends BasePolicy
         return $this->owns($user, $machine);
     }
 }
-

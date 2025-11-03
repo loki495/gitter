@@ -15,8 +15,6 @@ final class SetActiveBranch
 {
     /**
      * Mark the given branch active and clear others for the deployment.
-     *
-     *
      */
     public function execute(Branch $branch): void
     {
@@ -36,7 +34,7 @@ final class SetActiveBranch
         $result = $cli->run($deployment->machine);
 
         // Record the result
-        (new RecordDeploymentLog())->execute($deployment, [
+        (new RecordDeploymentLog)->execute($deployment, [
             'action' => 'checkout',
             'command' => $command,
             'output' => $result->output,

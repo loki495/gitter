@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\DeploymentLog;
 use App\Models\Deployment;
+use App\Models\DeploymentLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<DeploymentLog> */
@@ -34,4 +34,3 @@ final class DeploymentLogFactory extends Factory
         ];
     }
 }
-

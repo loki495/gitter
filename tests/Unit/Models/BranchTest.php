@@ -29,4 +29,3 @@ it('has correct defaults', function (): void {
     expect($branch->is_active)->toBeBool();
     expect($branch->is_tracking_remote)->toBeBool();
 });
-

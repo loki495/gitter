@@ -15,8 +15,6 @@ final class RecordDeploymentLog
 {
     /**
      * Persist a DeploymentLog record.
-     *
-     *
      */
     public function execute(
         Deployment $deployment,
@@ -42,4 +40,3 @@ final class RecordDeploymentLog
         return $log;
     }
 }
-

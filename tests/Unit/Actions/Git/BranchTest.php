@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\User;
-use App\Models\Deployment;
 use App\Services\GitService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -33,8 +33,8 @@ it('pulls branches successfully', function (): void {
 
     $git = app(GitService::class);
     $branches = $git->branch
-            ->addArgument('--no-color')
-            ->execute($deployment);
+        ->addArgument('--no-color')
+        ->execute($deployment);
 
     expect($branches)->toBe(['* git', 'main']);
 });
@@ -57,7 +57,7 @@ it('fails to pull branches from wrong path', function (): void {
 
     $git = app(GitService::class);
     $branches = $git->branch
-            ->addArgument('--no-color')
-            ->execute($deployment);
+        ->addArgument('--no-color')
+        ->execute($deployment);
 
 })->throws(Exception::class);

@@ -7,21 +7,21 @@ use App\Models\User;
 use App\Policies\SshKeyPolicy;
 
 beforeEach(function (): void {
-    $this->user = new User();
+    $this->user = new User;
     $this->user->id = 1;
 
-    $this->otherUser = new User();
+    $this->otherUser = new User;
     $this->otherUser->id = 2;
 });
 
 it('allows user to manage own SSH keys', function (): void {
-    $key = new SshKey();
+    $key = new SshKey;
     $key->user_id = $this->user->id;
 
-    $nonOwnerKey = new SshKey();
+    $nonOwnerKey = new SshKey;
     $nonOwnerKey->user_id = $this->otherUser->id;
 
-    $policy = new SshKeyPolicy();
+    $policy = new SshKeyPolicy;
 
     expect($policy->viewAny($this->user))->toBeTrue()
         ->and($policy->view($this->user, $key))->toBeTrue()
@@ -36,4 +36,3 @@ it('allows user to manage own SSH keys', function (): void {
         ->and($policy->restore($this->user, $nonOwnerKey))->toBeFalse()
         ->and($policy->forceDelete($this->user, $nonOwnerKey))->toBeFalse();
 });
-

@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\Actions\Machine;
 
 use App\Models\Machine;
-use App\Models\SshKey;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use function Laravel\Prompts\warning;
 
 class UpdateMachine
 {

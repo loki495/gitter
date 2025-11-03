@@ -9,8 +9,6 @@ use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\User;
 use App\Models\Website;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 
 it('creates a deployment successfully', function (): void {
@@ -57,7 +55,7 @@ it('updates a deployment successfully', function (): void {
         'path' => '/var/www/old',
     ]);
 
-    $action = new UpdateDeployment();
+    $action = new UpdateDeployment;
 
     $updated = $action->execute($deployment, [
         'path' => '/var/www/new',
@@ -98,4 +96,4 @@ it('throws when deleting someone else deployment', function (): void {
 
     $action = new DeleteDeployment;
     $action->execute($deployment);
-})->throws("This action is unauthorized.");
+})->throws('This action is unauthorized.');

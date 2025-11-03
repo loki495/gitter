@@ -7,21 +7,21 @@ use App\Models\Website;
 use App\Policies\WebsitePolicy;
 
 beforeEach(function (): void {
-    $this->user = new User();
+    $this->user = new User;
     $this->user->id = 1;
 
-    $this->otherUser = new User();
+    $this->otherUser = new User;
     $this->otherUser->id = 2;
 });
 
 it('allows any authenticated user to view/create, only owner can update/delete', function (): void {
-    $website = new Website();
+    $website = new Website;
     $website->user_id = $this->user->id;
 
-    $nonOwnerWebsite = new Website();
+    $nonOwnerWebsite = new Website;
     $nonOwnerWebsite->user_id = $this->otherUser->id;
 
-    $policy = new WebsitePolicy();
+    $policy = new WebsitePolicy;
 
     expect($policy->view($this->user, $website))->toBeTrue()
         ->and($policy->create($this->user))->toBeTrue()
@@ -30,4 +30,3 @@ it('allows any authenticated user to view/create, only owner can update/delete',
         ->and($policy->update($this->user, $nonOwnerWebsite))->toBeFalse()
         ->and($policy->delete($this->user, $nonOwnerWebsite))->toBeFalse();
 });
-
