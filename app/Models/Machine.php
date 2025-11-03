@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Crypt;
 
 class Machine extends Model
 {
@@ -22,7 +21,7 @@ class Machine extends Model
         'ip',
         'ssh_user',
         'ssh_port',
-        'ssh_key_path',
+        'ssh_key_id',
         'notes',
         'user_id',
     ];

@@ -80,6 +80,6 @@ final class Deployment extends Model
      // Example: treat 'machine_id' == null as local
     public function getIsLocalAttribute(): bool
     {
-        return $this->machine->ip === null;
+        return !$this->machine->ip;
     }
 }
