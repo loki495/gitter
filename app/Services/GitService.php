@@ -45,6 +45,23 @@ class GitService
     }
 
     /**
+     * Magic caller to resolve git subcommands dynamically
+     */
+    public function __call(string $name, array $arguments): BaseAction
+    {
+        $class = '\\App\\Actions\\Git\\'.ucfirst($name);
+
+        if (! class_exists($class)) {
+            throw new \RuntimeException("Git action class $class does not exist.");
+        }
+
+        /** @var BaseAction $instance */
+        $instance = new $class($this, ...$arguments);
+
+        return $instance;
+    }
+
+    /**
      * Run git command either remotely or locally
      *
      * Called by BaseAction::execute()

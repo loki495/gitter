@@ -9,6 +9,8 @@ use App\Services\GitService;
 
 abstract class BaseAction
 {
+    public $output;
+
     /** @var array<int,string> */
     protected array $arguments = [];
 
@@ -48,7 +50,8 @@ abstract class BaseAction
 
         // Child class parses output
         if ($output['exit_code'] === 0) {
-            return $this->parseOutput($output['stdout']);
+            $this->output = $this->parseOutput($output['stdout']);
+            return $this;
         }
 
         throw new \RuntimeException($output['stderr']);
@@ -65,4 +68,9 @@ abstract class BaseAction
      * Parse raw command output
      */
     abstract protected function parseOutput(string $output): mixed;
+
+    /**
+     * Parse raw command output
+     */
+    abstract protected function success(): bool;
 }

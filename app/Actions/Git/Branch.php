@@ -29,4 +29,9 @@ class Branch extends BaseAction
     {
         return array_filter(array_map('trim', explode("\n", $output)));
     }
+
+    public function success(): bool
+    {
+        return $this->output !== '';
+    }
 }

@@ -58,6 +58,11 @@ class TestGitAction extends BaseAction
     {
         return $output ?? null;
     }
+
+    protected function success(): bool
+    {
+        return $output;
+    }
 }
 
 it('throws exception when accessing non-existent git action', function (): void {

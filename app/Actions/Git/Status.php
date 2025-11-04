@@ -26,4 +26,9 @@ class Status extends BaseAction
     {
         return trim($output, " \t\n\r\0\x0B");
     }
+
+    public function success(): bool
+    {
+        return $this->output !== '';
+    }
 }
