@@ -62,7 +62,7 @@ new class extends Component {
                         Name <span class="text-red-500">*</span>
                     </label>
                     <input type="text"
-                        wire:model.defer="name"
+                        wire:model="name"
                         class="w-full rounded-lg bg-zinc-700 border border-zinc-600 text-zinc-100 p-2 focus:ring focus:ring-indigo-500" />
                 </div>
                 @error('name')
@@ -75,15 +75,14 @@ new class extends Component {
                 <div class="flex items-center gap-4">
                     <label class="w-40 text-sm font-medium text-zinc-300">Description</label>
                     <textarea
-                        wire:model.defer="description"
+                        wire:model="description"
                         class="w-full rounded-lg bg-zinc-700 border border-zinc-600 text-zinc-100 p-2 focus:ring focus:ring-indigo-500"></textarea/>
                 </div>
-                @error('domain')
+                @error('description')
                 <p class="text-red-400 text-sm ml-40 mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
-            {{-- Buttons --}}
             <div class="flex items-center justify-end gap-4 pt-4 border-t border-zinc-700">
                 <x-button variant="danger" href="{{ route('websites.index') }}"
                     >Cancel</x-button>

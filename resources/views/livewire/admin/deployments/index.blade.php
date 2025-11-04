@@ -97,22 +97,24 @@ Branches found:\n{$branches_str}",
                     -
                     @endif
                 </td>
-                <td class="px-4 py-2 flex gap-2">
-                    <span class="text-zinc-400 font-semibold">{{ $deployment['branches_count'] }}</span>
-                    <x-button
-                        wire:click="pullBranches({{ $deployment['id'] }})"
-                        wire:loading.attr="disabled"
-                        wire:target="pullBranches({{ $deployment['id'] }})"
-                        size="sm">
-                        Pull
-                    </x-button>
+                <td class="px-4 py-2">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="text-zinc-400 font-semibold">{{ $deployment['branches_count'] }}</span>
+                        <x-button
+                            wire:click="pullBranches({{ $deployment['id'] }})"
+                            wire:loading.attr="disabled"
+                            wire:target="pullBranches({{ $deployment['id'] }})"
+                            size="sm">
+                            Pull
+                        </x-button>
 
-                    <x-button
-                        href="{{ route('branches.index', ['website' => $website, 'deployment' => $deployment['id']]) }}"
-                        variant="primary"
-                        size="sm">
-                        View
-                    </x-button>
+                        <x-button
+                            href="{{ route('branches.index', ['website' => $website, 'deployment' => $deployment['id']]) }}"
+                            variant="primary"
+                            size="sm">
+                            View
+                        </x-button>
+                    </div>
                 </td>
                 <td class="px-4 py-2">
                     @if($deployment['is_primary'])
@@ -121,17 +123,19 @@ Branches found:\n{$branches_str}",
                     No
                     @endif
                 </td>
-                <td class="px-4 py-2 text-right flex justify-end gap-2">
-                    <x-button href="{{ route('deployments.edit', ['website' => $website, 'deployment' => $deployment['id']]) }}"
-                        variant="primary">
-                        Edit
-                    </x-button>
-                    <x-button
-                        wire:click="deleteDeployment({{ $deployment['id'] }})"
-                        onclick="confirm('Are you sure?') || event.stopImmediatePropagation()"
-                        variant="danger">
-                        Delete
-                    </x-button>
+                <td class="px-4 py-2 text-right ">
+                    <div class="flex items-center justify-end gap-2">
+                        <x-button href="{{ route('deployments.edit', ['website' => $website, 'deployment' => $deployment['id']]) }}"
+                            variant="primary">
+                            Edit
+                        </x-button>
+                        <x-button
+                            wire:click="deleteDeployment({{ $deployment['id'] }})"
+                            onclick="confirm('Are you sure?') || event.stopImmediatePropagation()"
+                            variant="danger">
+                            Delete
+                        </x-button>
+                    </div>
                 </td>
             </tr>
             @endforeach
