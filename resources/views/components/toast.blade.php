@@ -13,7 +13,7 @@
                 x-transition:leave="transition ease-in duration-100"
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
-                class="max-w-sm w-full bg-zinc-800 text-white shadow-xlg rounded-xl pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden border-2 mt-2"
+                class="max-w-sm w-full bg-zinc-800 text-white shadow-xlg rounded-xl pointer-events-auto ring-1 ring-black ring-opacity-5 border-2 mt-2"
                 :class="toast?.type === 'info' ? 'border-blue-400' : toast?.type === 'success' ? 'border-green-400' : toast?.type === 'error' ? 'border-red-400' : 'border-yellow-400'"
             >
                 <div class="p-4 flex items-start">
@@ -40,7 +40,7 @@
                         </template>
                     </div>
                     <div class="ml-3 min-w-0 flex-1">
-                        <p class="text-sm font-medium break-words whitespace-pre-wrap" x-text="toast.message"></p>
+                        <p class="text-sm font-medium break-words whitespace-pre-wrap pb-2" x-text="toast.message"></p>
                     </div>
                     <button
                         @click="remove(index)"
