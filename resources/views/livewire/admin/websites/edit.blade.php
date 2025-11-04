@@ -27,8 +27,7 @@ new class extends Component {
             'description' => ['required', 'string', 'max:255'],
         ]);
 
-        if ($this->website->exists()) {
-            // Edit existing deployment
+        if ($this->website->exists) {
             (new UpdateWebsite())->execute($this->website, $validated);
             $this->dispatch('notify', [
                 'type' => 'success',
@@ -36,8 +35,7 @@ new class extends Component {
                 'redirect' => route('websites.index'),
             ]);
         } else {
-            // Create new deployment
-            $website = (new CreateWebsite())->execute($validated);
+            (new CreateWebsite())->execute($validated);
             $this->dispatch('notify', [
                 'type' => 'success',
                 'message' => "Website updated successfully",
