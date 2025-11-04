@@ -13,7 +13,7 @@ new class extends Component {
     public function mount(Website $website): void
     {
         $this->website = $website;
-        $this->deployments = Deployment::with(['website', 'machine', 'machine.sshKey'])->withCount('branches')->get()->toArray();
+        $this->deployments = $website->deployments()->with(['website', 'machine', 'machine.sshKey'])->withCount('branches')->get()->toArray();
     }
 
     public function deleteDeployment(int $id): void
