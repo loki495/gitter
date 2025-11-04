@@ -30,11 +30,19 @@ new class extends Component {
         if ($this->website->exists()) {
             // Edit existing deployment
             (new UpdateWebsite())->execute($this->website, $validated);
-            session()->flash('success', 'Website updated successfully.');
+            $this->dispatch('notify', [
+                'type' => 'success',
+                'message' => "Website updated successfully",
+                'redirect' => route('websites.index'),
+            ]);
         } else {
             // Create new deployment
             $website = (new CreateWebsite())->execute($validated);
-            session()->flash('success', 'Website created successfully.');
+            $this->dispatch('notify', [
+                'type' => 'success',
+                'message' => "Website updated successfully",
+                'redirect' => route('websites.index'),
+            ]);
         }
         redirect()->route('websites.index');
     }
