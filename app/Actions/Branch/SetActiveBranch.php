@@ -5,8 +5,53 @@ declare(strict_types=1);
 namespace App\Actions\Branch;
 
 use App\Models\Branch;
+use App\Services\GitService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
-/**
- * SetActiveBranch - atomically set one branch active per deployment.
- */
-final class SetActiveBranch {}
+class SetActiveBranch
+{
+    public function __construct(
+        protected GitService $git
+    ) {}
+
+    /**
+     * Switches the website's active branch.
+     *
+     * Steps:
+     *  1. Authorize the user.
+     *  2. Validate that the target branch exists and belongs to the website.
+     *  3. Ask GitService to check out the branch.
+     *  4. Only if Git succeeds, update DB in a transaction.
+     *
+     * @throws AuthorizationException
+     */
+    public function execute(Branch $branch): Branch
+    {
+        Gate::authorize('update', $branch);
+
+        // Step 1: verify repository exists and checkout is possible
+        $result = $this->git->checkout($branch)
+            ->execute($branch->deployment);
+
+        if (! $result->success()) {
+            // Prefer a domain-specific exception for clarity
+            throw new \RuntimeException(
+                sprintf('Failed to checkout branch "%s": %s', $branch->name, $result->errorOutput())
+            );
+        }
+
+        // Step 2: persist new active state only after success
+        DB::transaction(function () use ($branch): void {
+            $branch->deployment->branches()
+                ->where('id', '!=', $branch->id)
+                ->update(['is_active' => false]);
+
+            $branch->is_active = true;
+            $branch->save();
+        });
+
+        return $branch;
+    }
+}
