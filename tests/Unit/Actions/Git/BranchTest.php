@@ -32,11 +32,11 @@ it('pulls branches successfully', function (): void {
     ]);
 
     $git = app(GitService::class);
-    $branches = $git->branch
+    $result = $git->branch
         ->addArgument('--no-color')
         ->execute($deployment);
 
-    expect($branches)->toBe(['* git', 'main']);
+    expect($result->output)->toBe(['* git', 'main']);
 });
 
 it('fails to pull branches from wrong path', function (): void {
@@ -56,7 +56,7 @@ it('fails to pull branches from wrong path', function (): void {
     ]);
 
     $git = app(GitService::class);
-    $branches = $git->branch
+    $result = $git->branch
         ->addArgument('--no-color')
         ->execute($deployment);
 

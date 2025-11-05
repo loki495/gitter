@@ -32,11 +32,11 @@ it('pulls branches successfully', function (): void {
     ]);
 
     $git = app(GitService::class);
-    $status = $git->status
+    $result = $git->status
         ->addArgument('--branch', 'main')
         ->execute($deployment);
 
-    expect($status)->toContain('On branch');
+    expect($result->output)->toContain('On branch');
 });
 
 it('fails to pull branches from wrong path', function (): void {
@@ -56,7 +56,7 @@ it('fails to pull branches from wrong path', function (): void {
     ]);
 
     $git = app(GitService::class);
-    $status = $git->status
+    $result = $git->status
         ->addArgument('--branch', 'main')
         ->execute($deployment);
 

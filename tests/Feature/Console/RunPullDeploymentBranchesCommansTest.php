@@ -68,11 +68,11 @@ it('runs the PullDeploymentBranches action successfully', function (): void {
     ]);
 
     $git = app(GitService::class);
-    $branches = $git->branch
+    $result = $git->branch
         ->addArgument('--no-color')
         ->execute($deployment);
 
-    expect($branches)->toBe(['* git', 'main']);
+    expect($result->output)->toBe(['* git', 'main']);
 
     $result = artisan(RunPullDeploymentBranches::class, [
         'deployment_id' => $deployment->id,

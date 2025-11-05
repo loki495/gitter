@@ -22,17 +22,20 @@ final readonly class PullDeploymentBranches
     {
         $start = microtime(true);
 
-        /** @var array<string> $output */
-        $output = $this->git->branch
+        $result = $this->git->branch
             ->addArgument('--no-color')
             ->execute($deployment);
 
         $deployment->branches()->delete();
 
+        if (! $result->success()) {
+            throw new \RuntimeException($result->output);
+        }
+
         // Parse branches
         $branches = [];
-        foreach ($output as $line) {
-            $line = trim($line);
+        foreach ($result->output as $line) {
+            $line = trim((string) $line);
             $isActive = str_starts_with($line, '*');
             $name = ltrim($line, '* ');
             $branches[] = [
