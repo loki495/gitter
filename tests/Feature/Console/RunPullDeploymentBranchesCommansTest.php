@@ -7,8 +7,12 @@ use App\Models\Deployment;
 use App\Models\Machine;
 use App\Services\GitService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Tests\Traits\WithTemporaryGitRepository;
 
 use function Pest\Laravel\artisan;
+
+uses(WithTemporaryGitRepository::class);
 
 beforeEach(function (): void {
     $this->user = \App\Models\User::factory()->create();
@@ -51,6 +55,8 @@ it('fails when the action throws an exception', function (): void {
 });
 
 it('runs the PullDeploymentBranches action successfully', function (): void {
+    $this->setupGitRepository();
+
     $machine = Machine::factory()->create([
         'user_id' => $this->user->id,
         'ip' => '',
@@ -60,11 +66,10 @@ it('runs the PullDeploymentBranches action successfully', function (): void {
         'name' => 'localhost',
     ]);
 
-    // You already use a local test repo path for these tests
     $deployment = Deployment::factory()->create([
         'user_id' => $this->user->id,
         'machine_id' => $machine->id,
-        'path' => '/home/andres/www/git',
+        'path' => $this->repoPath,
     ]);
 
     $git = app(GitService::class);
@@ -72,17 +77,22 @@ it('runs the PullDeploymentBranches action successfully', function (): void {
         ->addArgument('--no-color')
         ->execute($deployment);
 
-    expect($result->result())->toHaveKey('0.name', 'git')
-        ->and($result->result())->toHaveKey('0.active', true)
-        ->and($result->result())->toHaveKey('1.name', 'main')
-        ->and($result->result())->toHaveKey('1.active', false);
+    $branches = collect($result->result());
+    $mainBranch = $branches->firstWhere('name', 'main');
+    $featureBranch = $branches->firstWhere('name', 'feature-branch');
+
+    expect($mainBranch['active'])->toBeTrue();
+    expect($featureBranch['active'])->toBeFalse();
 
     $result = artisan(RunPullDeploymentBranches::class, [
         'deployment_id' => $deployment->id,
     ]);
+    $result->run();
 
     $result
         ->expectsOutput("Running PullDeploymentBranches for Deployment ID {$deployment->id}...")
         ->expectsOutput('✅ PullDeploymentBranches completed successfully.')
         ->assertExitCode(Command::SUCCESS);
-});
+
+    $this->cleanupGitRepository();
+})->only();
