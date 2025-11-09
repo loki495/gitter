@@ -1,15 +1,21 @@
 {
-    "preset": "base",
     "ignore": {
         "words": [
-            "php",
             "rebase",
-            "arg",
+            "auth",
+            "livewire",
+            "cli",
             "args",
+            "arg",
             "chainable",
             "cmd",
+            "bool",
+            "fillable",
+            "vite",
             "getter",
-            "subcommands"
+            "subcommands",
+            "stdout",
+            "stderr"
         ],
         "paths": []
     }
