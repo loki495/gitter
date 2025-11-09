@@ -12,6 +12,7 @@ use App\Models\Deployment;
 /**
  * @property-read \App\Actions\Git\Branch $branch
  * @property-read \App\Actions\Git\Status $status
+ * @property-read \App\Actions\Git\Status $checkout
  */
 class GitService
 {
@@ -40,7 +41,7 @@ class GitService
     /**
      * Magic caller to resolve git subcommands dynamically
      *
-     * @param array<int,mixed> $arguments
+     * @param  array<int,mixed>  $arguments
      */
     public function __call(string $name, array $arguments): BaseAction
     {
@@ -62,7 +63,7 @@ class GitService
      * Called by BaseAction::execute()
      *
      * @param  array<int,string>  $command
-     * @return array{stdout:string,stderr:string,exit_code:int}
+     * @return array<string,mixed>
      */
     public function runCommand(array $command, Deployment $deployment): array
     {
@@ -89,6 +90,15 @@ class GitService
         if (! $deployment->machine) {
             throw new \RuntimeException('Deployment has no machine.');
         }
+
+        $result = [
+            'stdout' => '',
+            'stderr' => '',
+            'exit_code' => 0,
+            'duration_ms' => 0,
+            'method' => '',
+            'command' => '',
+        ];
 
         if ($deployment->is_local) {
             $result = $this->runner->run($command);

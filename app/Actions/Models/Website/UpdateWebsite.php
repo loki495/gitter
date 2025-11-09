@@ -2,33 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Website;
+namespace App\Actions\Models\Website;
 
 use App\Models\Website;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-final class CreateWebsite
+final class UpdateWebsite
 {
     /**
      * @param  array<string, mixed>  $data
      *
      * @throws ValidationException
      */
-    public function execute(array $data): Website
+    public function execute(Website $website, array $data): Website
     {
-        Gate::authorize('create', Website::class);
+        Gate::authorize('update', $website);
 
         $validated = Validator::make($data, [
-            'name' => ['required', 'string', 'max:255', 'unique:websites,name'],
+            'name' => ['required', 'string', 'max:255', 'unique:websites,name,'.$website->id],
             'description' => ['nullable', 'string'],
         ])->validate();
 
-        $validated['user_id'] = Auth::id();
-
         /** @var array<string, mixed> $validated */
-        return Website::create($validated);
+        $website->update($validated);
+
+        return $website->refresh();
     }
 }

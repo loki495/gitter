@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Machine;
+namespace App\Actions\Models\Machine;
 
 use App\Models\Machine;
 use Illuminate\Support\Facades\Gate;

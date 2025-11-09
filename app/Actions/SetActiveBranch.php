@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Branch;
+namespace App\Actions;
 
 use App\Models\Branch;
 use App\Services\GitService;
@@ -33,15 +33,15 @@ class SetActiveBranch
 
         // Step 1: verify repository exists and checkout is possible
         /** @var \App\Actions\Git\Checkout $result */
-        $result = $this->git
+        $action = $this->git
             ->checkout($branch)
             ->execute();
-        dd($result);
+        dd($action);
 
-        if (! $result->success()) {
+        if (! $action->success()) {
             // Prefer a domain-specific exception for clarity
             throw new \RuntimeException(
-                sprintf('Failed to checkout branch "%s": %s', $branch->name, $result->errorOutput())
+                sprintf('Failed to checkout branch "%s": %s', $branch->name, $action->errorOutput())
             );
         }
 

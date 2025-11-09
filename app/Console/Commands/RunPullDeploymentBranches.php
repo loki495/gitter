@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Actions\Branch\PullDeploymentBranches;
+use App\Actions\PullDeploymentBranches;
 use App\Models\Deployment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;

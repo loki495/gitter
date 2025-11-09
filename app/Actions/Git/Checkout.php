@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Actions\Git;
 
 use App\Models\Branch;
-use App\Models\Deployment;
 use App\Services\GitService;
-use function Laravel\Prompts\multisearch;
 
 class Checkout extends BaseAction
 {
-
+    // @phpstan-ignore constructor.unusedParameter,missingType.parameter
     public function __construct(
         protected GitService $git,
         $dummy,
@@ -25,6 +23,10 @@ class Checkout extends BaseAction
      */
     protected function buildCommand(): array
     {
+        if (!$this->branch->deployment?->path) {
+            throw new \RuntimeException('Deployment with path is required');
+        }
+
         return [
             'cd',
             $this->branch->deployment->path,
@@ -38,10 +40,5 @@ class Checkout extends BaseAction
     protected function parseOutput(string $output): string
     {
         return trim($output, " \t\n\r\0\x0B");
-    }
-
-    public function success(): bool
-    {
-        return $this->output !== '';
     }
 }

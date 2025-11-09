@@ -6,12 +6,13 @@ namespace App\Actions\Git;
 
 use App\Models\Deployment;
 use App\Services\GitService;
-use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseAction
 {
     /** @var array<int,string>|string */
-    public array|string $output;
+    public array|string $parsedOutput;
+
+    public string $outputRaw;
 
     /** @var array<int,string> */
     protected array $arguments = [];
@@ -19,17 +20,20 @@ abstract class BaseAction
     protected string $git_cmd;
 
     public string $command;
+
     public int $exitCode;
+
     public float $durationMs;
+
     public string $method;
+
     public string $error;
 
     public function __construct(
         protected GitService $git,
         protected ?Deployment $deployment = null,
         mixed ...$args
-    )
-    {
+    ) {
         $this->git_cmd = trim(shell_exec('which git') ?: '', " \n");
     }
 
@@ -51,11 +55,11 @@ abstract class BaseAction
      */
     public function execute(?Deployment $deployment = null): self
     {
-        if ($deployment) {
+        if ($deployment instanceof \App\Models\Deployment) {
             $this->deployment = $deployment;
         }
 
-        if (! $this->deployment) {
+        if (! $this->deployment instanceof \App\Models\Deployment) {
             throw new \RuntimeException('Deployment not found.');
         }
 
@@ -70,12 +74,14 @@ abstract class BaseAction
 
         // Child class parses output
         if ($output['exit_code'] === 0) {
-            $this->output = $this->parseOutput($output['stdout']);
+            $this->outputRaw = $output['stdout'];
             $this->method = $output['method'];
             $this->exitCode = $output['exit_code'];
             $this->durationMs = $output['duration_ms'];
             $this->command = implode(' ', $output['command']);
             $this->error = $output['stderr'];
+
+            $this->result();
 
             return $this;
         }
@@ -83,6 +89,10 @@ abstract class BaseAction
         throw new \RuntimeException($output['stderr']);
     }
 
+    public function result(): mixed
+    {
+        return $this->parsedOutput ??= $this->parseOutput($this->outputRaw);
+    }
     /**
      * Base git command array, e.g. ['git', 'branch']
      *
@@ -98,7 +108,10 @@ abstract class BaseAction
     abstract protected function parseOutput(string $output): array|string;
 
     /**
-     * Parse raw command output
+     * Assume success if parsed output is not empty
      */
-    abstract public function success(): bool;
+    public function success(): bool
+    {
+        return ! empty($this->parsedOutput);
+    }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions\Git;
 
-use App\Models\Deployment;
-
 class Status extends BaseAction
 {
     /**
@@ -13,6 +11,9 @@ class Status extends BaseAction
      */
     protected function buildCommand(): array
     {
+        if (!$this->deployment?->path) {
+            throw new \RuntimeException('Deployment with path is required');
+        }
         return [
             'cd',
             $this->deployment->path,
@@ -27,8 +28,4 @@ class Status extends BaseAction
         return trim($output, " \t\n\r\0\x0B");
     }
 
-    public function success(): bool
-    {
-        return $this->output !== '';
-    }
 }

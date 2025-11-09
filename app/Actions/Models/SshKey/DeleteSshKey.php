@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\SshKey;
+namespace App\Actions\Models\SshKey;
 
 use App\Models\SshKey;
 use Illuminate\Support\Facades\Gate;

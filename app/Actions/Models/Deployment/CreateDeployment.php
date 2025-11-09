@@ -2,33 +2,36 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Deployment;
+namespace App\Actions\Models\Deployment;
 
 use App\Models\Deployment;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-final class UpdateDeployment
+final class CreateDeployment
 {
     /**
      * @param  array<string, mixed>  $data
      *
      * @throws ValidationException
      */
-    public function execute(Deployment $deployment, array $data): Deployment
+    public function execute(array $data): Deployment
     {
-        Gate::authorize('update', $deployment);
+        Gate::authorize('create', Deployment::class);
 
         $validated = Validator::make($data, [
+            'website_id' => ['required', 'integer', 'exists:websites,id'],
+            'machine_id' => ['required', 'integer', 'exists:machines,id'],
             'path' => ['required', 'string', 'max:255'],
             'url' => ['nullable', 'url'],
             'is_primary' => ['boolean'],
         ])->validate();
 
-        /** @var array<string, mixed> $validated */
-        $deployment->update($validated);
+        $validated['user_id'] = Auth::id();
 
-        return $deployment->refresh();
+        /** @var array<string, mixed> $validated */
+        return Deployment::create($validated);
     }
 }

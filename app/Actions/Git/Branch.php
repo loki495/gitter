@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace App\Actions\Git;
 
-use App\Models\Deployment;
-use App\Services\GitService;
-
 class Branch extends BaseAction
 {
+    /** @var array<int,array{name:string,active:bool}> */
+    public array $branches;
+
     /**
      * @return array<int,string>
      */
     protected function buildCommand(): array
     {
+        if (!$this->deployment?->path) {
+            throw new \RuntimeException('Deployment with path is required');
+        }
+
         return [
             'cd',
             $this->deployment->path,
@@ -24,9 +28,9 @@ class Branch extends BaseAction
     }
 
     /**
-     * @return array<int,string>
+     * @return array<int,string>|string
      */
-    protected function parseOutput(string $output): array
+    protected function parseOutput(string $output): array|string
     {
         foreach (explode("\n", $output) as $line) {
             $active = false;
@@ -41,10 +45,5 @@ class Branch extends BaseAction
         }
 
         return $this->branches;
-    }
-
-    public function success(): bool
-    {
-        return $this->output !== '';
     }
 }

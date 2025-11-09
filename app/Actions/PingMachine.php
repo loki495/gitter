@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Machine;
+namespace App\Actions;
 
 use App\Models\Machine;
 use App\Services\CliRunner;
 use App\Services\SshService;
 
-class CheckMachineStatus
+class PingMachine
 {
     public function __construct(protected CliRunner $runner, protected SshService $ssh) {}
 

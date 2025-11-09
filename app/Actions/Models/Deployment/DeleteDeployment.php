@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Deployment;
+namespace App\Actions\Models\Deployment;
 
 use App\Models\Deployment;
 use Illuminate\Support\Facades\Gate;
