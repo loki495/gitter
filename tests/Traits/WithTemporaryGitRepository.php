@@ -10,11 +10,12 @@ use Symfony\Component\Process\Process;
 trait WithTemporaryGitRepository
 {
     protected string $repoPath;
+
     protected string $basePath = 'framework/testing/git/';
 
     public function setupGitRepository(): void
     {
-        $this->repoPath = storage_path($this->basePath . 'git-repo-' .bin2hex(random_bytes(5)));
+        $this->repoPath = storage_path($this->basePath.'git-repo-'.bin2hex(random_bytes(5)));
 
         File::makeDirectory($this->repoPath, 0755, true, true);
 

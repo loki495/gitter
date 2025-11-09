@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Actions\Git\BaseAction;
-use App\Actions\Git\Branch;
-use App\Actions\Git\Status;
 use App\Models\Deployment;
 
 /**

@@ -7,7 +7,6 @@ use App\Models\Deployment;
 use App\Models\Machine;
 use App\Services\GitService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 use Tests\Traits\WithTemporaryGitRepository;
 
 use function Pest\Laravel\artisan;
@@ -87,12 +86,13 @@ it('runs the PullDeploymentBranches action successfully', function (): void {
     $result = artisan(RunPullDeploymentBranches::class, [
         'deployment_id' => $deployment->id,
     ]);
-    $result->run();
 
     $result
         ->expectsOutput("Running PullDeploymentBranches for Deployment ID {$deployment->id}...")
         ->expectsOutput('✅ PullDeploymentBranches completed successfully.')
         ->assertExitCode(Command::SUCCESS);
 
+    $result->run();
+
     $this->cleanupGitRepository();
-})->only();
+});

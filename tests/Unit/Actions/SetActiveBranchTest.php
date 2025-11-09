@@ -57,7 +57,7 @@ beforeEach(function (): void {
     ]);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     $this->cleanupGitRepository();
 });
 
@@ -84,7 +84,7 @@ function runBranchSwitchTest(Deployment $deployment, GitService $git, Closure $r
 
     // If the repo is dirty, expect an exception
     if (str_contains((string) $git->status->execute($deployment)->result(), 'Changes not staged for commit')) {
-        expect(fn () => $action->execute($featureBranch))
+        expect(fn (): \App\Models\Branch => $action->execute($featureBranch))
             ->toThrow(Exception::class, 'Please commit your changes or stash them before you switch branches.');
 
         // Assert we are still on the main branch
@@ -111,25 +111,25 @@ function runBranchSwitchTest(Deployment $deployment, GitService $git, Closure $r
 }
 
 it('switches branch on a clean local deployment', function (): void {
-    runBranchSwitchTest($this->localDeployment, $this->git, function () {
+    runBranchSwitchTest($this->localDeployment, $this->git, function (): void {
         // Clean repo, do nothing
     });
 });
 
 it('fails to switch branch on a dirty local deployment', function (): void {
-    runBranchSwitchTest($this->localDeployment, $this->git, function () {
+    runBranchSwitchTest($this->localDeployment, $this->git, function (): void {
         $this->runInRepo('echo "uncommitted change" > new-file.txt');
     });
 });
 
 it('switches branch on a clean remote deployment', function (): void {
-    runBranchSwitchTest($this->remoteDeployment, $this->git, function () {
+    runBranchSwitchTest($this->remoteDeployment, $this->git, function (): void {
         // Clean repo, do nothing
     });
 });
 
 it('fails to switch branch on a dirty remote deployment', function (): void {
-    runBranchSwitchTest($this->remoteDeployment, $this->git, function () {
+    runBranchSwitchTest($this->remoteDeployment, $this->git, function (): void {
         $this->runInRepo('echo "uncommitted change" > new-file.txt');
     });
 });
