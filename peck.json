@@ -5,6 +5,7 @@
             "php",
             "rebase",
             "arg",
+            "args",
             "chainable",
             "cmd",
             "getter",
