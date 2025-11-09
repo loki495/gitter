@@ -93,6 +93,7 @@ abstract class BaseAction
     {
         return $this->parsedOutput ??= $this->parseOutput($this->outputRaw);
     }
+
     /**
      * Base git command array, e.g. ['git', 'branch']
      *
@@ -112,6 +113,6 @@ abstract class BaseAction
      */
     public function success(): bool
     {
-        return ! empty($this->parsedOutput);
+        return isset($this->parsedOutput) && ($this->parsedOutput !== '' && $this->parsedOutput !== '0' && $this->parsedOutput !== []);
     }
 }

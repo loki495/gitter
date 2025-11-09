@@ -23,7 +23,7 @@ class Checkout extends BaseAction
      */
     protected function buildCommand(): array
     {
-        if (!$this->branch->deployment?->path) {
+        if (! $this->branch->deployment?->path) {
             throw new \RuntimeException('Deployment with path is required');
         }
 

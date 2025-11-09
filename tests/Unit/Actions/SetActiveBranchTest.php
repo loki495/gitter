@@ -58,7 +58,7 @@ function runBranchSwitchTest(Deployment $deployment, GitService $git): void
 {
     $status = $git->status->execute($deployment);
 
-    $currentBranch = preg_match('/^On branch (.*)/', $status->result(), $matches) ? $matches[1] : null;
+    $currentBranch = preg_match('/^On branch (.*)/', (string) $status->result(), $matches) ? $matches[1] : null;
     if ($currentBranch === null || $currentBranch === '' || $currentBranch === '0') {
         dd('no branch', $status->result());
     }
@@ -89,14 +89,14 @@ function runBranchSwitchTest(Deployment $deployment, GitService $git): void
 
         // Otherwise, confirm branch changed
         $newStatus = $git->status->execute($deployment);
-        $newBranch = preg_match('/^On branch (.*)/', $newStatus->result(), $matches) ? $matches[1] : null;
+        $newBranch = preg_match('/^On branch (.*)/', (string) $newStatus->result(), $matches) ? $matches[1] : null;
         expect(trim((string) $newBranch))->toBe($targetBranch->name);
 
         // Cleanup: switch back to original branch
         $git->checkout($git, '', $currentBranch);
 
         $newStatus = $git->status->execute($deployment);
-        $newBranch = preg_match('/^On branch (.*)/', $newStatus->result(), $matches) ? $matches[1] : null;
+        $newBranch = preg_match('/^On branch (.*)/', (string) $newStatus->result(), $matches) ? $matches[1] : null;
         expect(trim((string) $newBranch))->toBe($currentBranch->name);
 
     } catch (\Exception $e) {
