@@ -9,9 +9,12 @@ use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
 use App\Services\GitService;
+use Tests\Traits\WithTemporaryGitRepository;
+
+uses(WithTemporaryGitRepository::class);
 
 beforeEach(function (): void {
-    $this->repoPath = '/home/andres/www/git';
+    $this->setupGitRepository();
     $this->git = app(GitService::class);
     $this->user = User::factory()->create();
 
@@ -54,61 +57,79 @@ beforeEach(function (): void {
     ]);
 });
 
-function runBranchSwitchTest(Deployment $deployment, GitService $git): void
-{
-    $status = $git->status->execute($deployment);
-
-    $currentBranch = preg_match('/^On branch (.*)/', (string) $status->result(), $matches) ? $matches[1] : null;
-    if ($currentBranch === null || $currentBranch === '' || $currentBranch === '0') {
-        dd('no branch', $status->result());
-    }
-
-    // Get all branches
-    $branches = $git->branch()->execute($deployment)->result();
-
-    // Pick a branch that is not currently active
-    $targetBranch = collect($branches)->first(fn ($b): bool => $b['name'] !== $currentBranch)['name'];
-
-    expect($targetBranch)->not()->toBeNull();
-
-    $targetBranch = Branch::factory()->create([
-        'name' => $targetBranch,
-        'deployment_id' => $deployment->id,
-    ]);
-
-    $currentBranch = Branch::factory()->create([
-        'name' => $currentBranch,
-        'deployment_id' => $deployment->id,
-    ]);
-
-    $action = new SetActiveBranch($git);
-    try {
-        $result = $action->execute($targetBranch);
-        dd($result);
-        expect($result->result())->toContain('Please commit your changes or stash them before you switch branches.');
-
-        // Otherwise, confirm branch changed
-        $newStatus = $git->status->execute($deployment);
-        $newBranch = preg_match('/^On branch (.*)/', (string) $newStatus->result(), $matches) ? $matches[1] : null;
-        expect(trim((string) $newBranch))->toBe($targetBranch->name);
-
-        // Cleanup: switch back to original branch
-        $git->checkout($git, '', $currentBranch);
-
-        $newStatus = $git->status->execute($deployment);
-        $newBranch = preg_match('/^On branch (.*)/', (string) $newStatus->result(), $matches) ? $matches[1] : null;
-        expect(trim((string) $newBranch))->toBe($currentBranch->name);
-
-    } catch (\Exception $e) {
-        $output = $e->getMessage();
-        expect($output)->toContain('Please commit your changes or stash them before you switch branches.');
-    }
-}
-
-it('switches branch on a local deployment safely', function (): void {
-    runBranchSwitchTest($this->localDeployment, $this->git);
+afterEach(function () {
+    $this->cleanupGitRepository();
 });
 
-it('switches branch on a remote deployment safely', function (): void {
-    runBranchSwitchTest($this->remoteDeployment, $this->git);
+function runBranchSwitchTest(Deployment $deployment, GitService $git, Closure $repoSetup): void
+{
+    // Initial state: on 'main' branch
+    $status = $git->status->execute($deployment);
+    expect((string) $status->result())->toContain('On branch main');
+
+    // Create branch models
+    $mainBranch = Branch::factory()->create([
+        'name' => 'main',
+        'deployment_id' => $deployment->id,
+    ]);
+    $featureBranch = Branch::factory()->create([
+        'name' => 'feature-branch',
+        'deployment_id' => $deployment->id,
+    ]);
+
+    // Setup repo state using the provided closure
+    $repoSetup($deployment, $git);
+
+    $action = new SetActiveBranch($git);
+
+    // If the repo is dirty, expect an exception
+    if (str_contains((string) $git->status->execute($deployment)->result(), 'Changes not staged for commit')) {
+        expect(fn () => $action->execute($featureBranch))
+            ->toThrow(Exception::class, 'Please commit your changes or stash them before you switch branches.');
+
+        // Assert we are still on the main branch
+        $status = $git->status->execute($deployment);
+        expect((string) $status->result())->toContain('On branch main');
+
+        return;
+    }
+
+    // If the repo is clean, expect a successful switch
+    $result = $action->execute($featureBranch);
+    expect($result)->toBeInstanceOf(Branch::class);
+    expect($result->is_active)->toBeTrue();
+    expect((string) $result->name)->toBe($featureBranch->name);
+
+    // Confirm branch changed by checking git status
+    $newStatus = $git->status->execute($deployment);
+    expect((string) $newStatus->result())->toContain("On branch {$featureBranch->name}");
+
+    // Switch back to main
+    $action->execute($mainBranch);
+    $finalStatus = $git->status->execute($deployment);
+    expect((string) $finalStatus->result())->toContain("On branch {$mainBranch->name}");
+}
+
+it('switches branch on a clean local deployment', function (): void {
+    runBranchSwitchTest($this->localDeployment, $this->git, function () {
+        // Clean repo, do nothing
+    });
+});
+
+it('fails to switch branch on a dirty local deployment', function (): void {
+    runBranchSwitchTest($this->localDeployment, $this->git, function () {
+        $this->runInRepo('echo "uncommitted change" > new-file.txt');
+    });
+});
+
+it('switches branch on a clean remote deployment', function (): void {
+    runBranchSwitchTest($this->remoteDeployment, $this->git, function () {
+        // Clean repo, do nothing
+    });
+});
+
+it('fails to switch branch on a dirty remote deployment', function (): void {
+    runBranchSwitchTest($this->remoteDeployment, $this->git, function () {
+        $this->runInRepo('echo "uncommitted change" > new-file.txt');
+    });
 });
