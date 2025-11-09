@@ -22,6 +22,7 @@ final readonly class PullDeploymentBranches
     {
         $start = microtime(true);
 
+        /** @var \App\Actions\Git\Branch $result */
         $result = $this->git->branch
             ->addArgument('--no-color')
             ->execute($deployment);
@@ -29,7 +30,7 @@ final readonly class PullDeploymentBranches
         $deployment->branches()->delete();
 
         if (! $result->success()) {
-            throw new \RuntimeException($result->output);
+            throw new \RuntimeException(implode("\n", $result->output));
         }
 
         // Parse branches
@@ -63,9 +64,9 @@ final readonly class PullDeploymentBranches
         DeploymentLog::create([
             'deployment_id' => $deployment->id,
             'action' => 'refresh_branches',
-            'command' => in_array(implode(' ', $this->git->lastCommand ?? []), ['', '0'], true) ? [] : implode(' ', $this->git->lastCommand ?? []),
-            'output' => $this->git->lastOutput,
-            'exit_code' => $this->git->lastExitCode,
+            'command' => $result->command,
+            'output' => implode("\n", $result->output),
+            'exit_code' => $result->exitCode,
             'executed_at' => now(),
             'duration_ms' => (int) ((microtime(true) - $start) * 1000),
         ]);

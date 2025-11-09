@@ -7,18 +7,23 @@ namespace App\Actions\Git;
 use App\Models\Branch;
 use App\Models\Deployment;
 use App\Services\GitService;
+use function Laravel\Prompts\multisearch;
 
 class Checkout extends BaseAction
 {
-    public function __construct(protected GitService $git, protected Branch $branch)
-    {
-        parent::__construct($git);
+
+    public function __construct(
+        protected GitService $git,
+        $dummy,
+        public Branch $branch
+    ) {
+        parent::__construct($git, $this->branch->deployment);
     }
 
     /**
      * @return array<int,string>
      */
-    protected function buildCommand(Deployment $deployment): array
+    protected function buildCommand(): array
     {
         return [
             'cd',

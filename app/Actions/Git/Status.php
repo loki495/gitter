@@ -11,11 +11,11 @@ class Status extends BaseAction
     /**
      * @return array<int,string>
      */
-    protected function buildCommand(Deployment $deployment): array
+    protected function buildCommand(): array
     {
         return [
             'cd',
-            $deployment->path,
+            $this->deployment->path,
             '&&',
             $this->git_cmd,
             'status',

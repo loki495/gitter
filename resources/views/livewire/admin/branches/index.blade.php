@@ -20,7 +20,7 @@ new class extends Component {
 
     public function pullBranches(): void
     {
-        app(PullDeploymentBranches::class)->execute($this->deployment);
+        (new PullDeploymentBranches)->execute($this->deployment);
         $this->branches = $this->deployment->branches()->get();
     }
 

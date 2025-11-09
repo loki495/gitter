@@ -35,7 +35,11 @@ beforeEach(function (): void {
 // Named class extending BaseAction for testing
 class TestGitAction extends BaseAction
 {
-    public function __construct(public GitService $git) {}
+    public function __construct(
+        protected GitService $git,
+        protected ?Deployment $deployment = null,
+        mixed ...$args
+    ) {}
 
     public function executeCommand(array $command, Deployment $deployment): array
     {
@@ -43,23 +47,23 @@ class TestGitAction extends BaseAction
     }
 
     // Implement abstract methods
-    protected function buildCommand(Deployment $deployment): array
+    protected function buildCommand(): array
     {
         return [
             'cd',
-            $deployment->path,
+            $this->deployment->path,
             '&&',
             'git',
             'status',
         ];
     }
 
-    protected function parseOutput(string $output): mixed
+    protected function parseOutput(string $output): array|string
     {
         return $output ?? null;
     }
 
-    protected function success(): bool
+    public function success(): bool
     {
         return $output;
     }
@@ -85,16 +89,9 @@ it('runs ssh command when deployment is not local', function (): void {
     $result = $action->execute($this->deployment);
 
     expect($result->output)->toContain('On branch ');
-    expect($this->git->lastMethod)->toBe('ssh');
-    expect($this->git->lastCommand)->toBe([
-        'cd',
-        $this->deployment->path,
-        '&&',
-        'git',
-        'status',
-    ]);
-    expect($this->git->lastOutput)->toContain('On branch ');
-    expect($this->git->lastExitCode)->toBe(0);
+    expect($result->method)->toBe('ssh');
+    expect($result->command)->toBe('cd /home/andres/www/git && git status');
+    expect($result->exitCode)->toBe(0);
 });
 
 it('runs local command from a BaseAction subclass', function (): void {
@@ -108,16 +105,10 @@ it('runs local command from a BaseAction subclass', function (): void {
     $result = $action->execute($this->deployment);
 
     expect($result->output)->toContain('On branch ');
-    expect($this->git->lastCommand)->toBe([
-        'cd',
-        $this->deployment->path,
-        '&&',
-        'git',
-        'status',
-    ]);
+    expect($result->command)->toBe('cd /home/andres/www/git && git status');
 
-    expect($this->git->lastMethod)->toBe('local');
-    expect($this->git->lastExitCode)->toBe(0);
+    expect($result->method)->toBe('local');
+    expect($result->exitCode)->toBe(0);
 });
 
 it('throws exception when runCommand is called with a deployment with no machine', function (): void {

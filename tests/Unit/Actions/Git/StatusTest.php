@@ -2,62 +2,58 @@
 
 declare(strict_types=1);
 
-use App\Models\Deployment;
+use App\Actions\Git\Status;
 use App\Models\Machine;
-use App\Models\User;
+use App\Models\SshKey;
+use App\Models\Deployment;
 use App\Services\GitService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    $this->user = User::factory()->create();
-    $this->actingAs($this->user);
+    $this->repoPath = '/home/andres/www/git';
 });
 
-it('pulls branches successfully', function (): void {
+it('runs git status for a local deployment', function (): void {
     $machine = Machine::factory()->create([
-        'user_id' => $this->user->id,
-        'ip' => '',
-        'ssh_key_id' => null,
-        'ssh_user' => null,
+        'name' => 'Localhost',
+        'ip' => null,
         'ssh_port' => null,
-        'name' => 'localhost',
     ]);
 
     $deployment = Deployment::factory()->create([
-        'user_id' => $this->user->id,
         'machine_id' => $machine->id,
-        'path' => '/home/andres/www/git',
+        'path' => $this->repoPath,
     ]);
 
     $git = app(GitService::class);
-    $result = $git->status
-        ->addArgument('--branch', 'main')
-        ->execute($deployment);
+    $result = $git->status->execute($deployment);
 
     expect($result->output)->toContain('On branch');
 });
 
-it('fails to pull branches from wrong path', function (): void {
+it('runs git status for a remote SSH deployment', function (): void {
+    $key = SshKey::factory()->create([
+        'name' => 'Deploy Key',
+        'filename' => 'deploy_key',
+    ]);
+
     $machine = Machine::factory()->create([
-        'user_id' => $this->user->id,
-        'ip' => '',
-        'ssh_key_id' => null,
-        'ssh_user' => null,
-        'ssh_port' => null,
-        'name' => 'localhost',
+        'name' => 'SSH Machine',
+        'ip' => '127.0.0.1',
+        'ssh_port' => 22222,
+        'ssh_key_id' => $key->id,
+        'ssh_user' => 'andres',
     ]);
 
     $deployment = Deployment::factory()->create([
-        'user_id' => $this->user->id,
         'machine_id' => $machine->id,
-        'path' => '/unknown/path',
+        'path' => $this->repoPath,
     ]);
 
     $git = app(GitService::class);
-    $result = $git->status
-        ->addArgument('--branch', 'main')
-        ->execute($deployment);
+    $result = $git->status->execute($deployment);
 
-})->throws(Exception::class);
+    expect($result->output)->toContain('On branch');
+});

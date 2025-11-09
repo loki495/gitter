@@ -38,7 +38,7 @@ new class extends Component {
         }
 
         try {
-            $branches = app(PullDeploymentBranches::class)->execute($deployment);
+            $branches = (new PullDeploymentBranches)->execute($deployment);
 
             $this->dispatch('notify', [
                 'type' => 'success',

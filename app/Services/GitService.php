@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Actions\Git\BaseAction;
+use App\Actions\Git\Branch;
+use App\Actions\Git\Status;
 use App\Models\Deployment;
 
 /**
@@ -13,15 +15,6 @@ use App\Models\Deployment;
  */
 class GitService
 {
-    /** @var array<int, string> */
-    public array $lastCommand;
-
-    public string $lastOutput;
-
-    public int $lastExitCode;
-
-    public string $lastMethod;
-
     public function __construct(
         protected SshService $ssh,
         protected CliRunner $runner
@@ -46,6 +39,8 @@ class GitService
 
     /**
      * Magic caller to resolve git subcommands dynamically
+     *
+     * @param array<int,mixed> $arguments
      */
     public function __call(string $name, array $arguments): BaseAction
     {
@@ -56,7 +51,7 @@ class GitService
         }
 
         /** @var BaseAction $instance */
-        $instance = new $class($this, ...$arguments);
+        $instance = new $class($this, null, ...$arguments);
 
         return $instance;
     }
@@ -97,15 +92,13 @@ class GitService
 
         if ($deployment->is_local) {
             $result = $this->runner->run($command);
-            $this->lastMethod = 'local';
+            $result['method'] = 'local';
         } else {
             $result = $this->ssh->run($deployment->machine, $command);
-            $this->lastMethod = 'ssh';
+            $result['method'] = 'ssh';
         }
 
-        $this->lastCommand = $command;
-        $this->lastOutput = $result['stdout'];
-        $this->lastExitCode = $result['exit_code'];
+        $result['command'] = $command;
 
         return $result;
     }

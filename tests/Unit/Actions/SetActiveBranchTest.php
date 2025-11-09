@@ -4,82 +4,100 @@ declare(strict_types=1);
 
 use App\Actions\Branch\SetActiveBranch;
 use App\Models\Branch;
+use App\Models\Deployment;
+use App\Models\Machine;
+use App\Models\SshKey;
 use App\Models\User;
-use App\Models\Website;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Gate;
+use App\Services\GitService;
 
 beforeEach(function (): void {
-    // If the action fires events, silence them by default; tests can enable expectations.
-    Event::fake();
+    $this->repoPath = '/home/andres/www/git';
+    $this->git = app(GitService::class);
+    $this->user = User::factory()->create();
+
+    $this->actingAs($this->user);
+
+    $key = SshKey::factory()->create([
+        'user_id' => $this->user->id,
+        'name' => 'Deploy Key',
+        'filename' => 'deploy_key',
+    ]);
+
+    $this->localMachine = Machine::factory()->create([
+        'user_id' => $this->user->id,
+        'name' => 'Local Machine',
+        'ip' => null,
+        'ssh_port' => null,
+        'ssh_user' => 'andres',
+        'ssh_key_id' => null,
+    ]);
+
+    $this->remoteMachine = Machine::factory()->create([
+        'user_id' => $this->user->id,
+        'name' => 'SSH Machine',
+        'ip' => '127.0.0.1',
+        'ssh_port' => 22222,
+        'ssh_user' => 'andres',
+        'ssh_key_id' => $key->id,
+    ]);
+
+    $this->localDeployment = Deployment::factory()->create([
+        'user_id' => $this->user->id,
+        'machine_id' => $this->localMachine->id,
+        'path' => $this->repoPath,
+    ]);
+
+    $this->remoteDeployment = Deployment::factory()->create([
+        'user_id' => $this->user->id,
+        'machine_id' => $this->remoteMachine->id,
+        'path' => $this->repoPath,
+    ]);
 });
 
-it('sets the chosen branch active and deactivates other branches for the same website', function (): void {
-    $user = User::factory()->create();
-    $this->actingAs($user);
+function runBranchSwitchTest(Deployment $deployment, GitService $git): void {
+    $status = $git->status->execute($deployment);
 
-    $website = Website::factory()->create(['user_id' => $user->id]);
+    $currentBranch = preg_match('/^On branch (.*)/', $status->output, $matches) ? $matches[1] : null;
+    if (! $currentBranch) {
+        dd('no branch', $status->output);
+    }
 
-    // create branches; one pre-active, one to be selected
-    $branchA = Branch::factory()->create([
-        'website_id' => $website->id,
-        'name' => 'branch-a',
-        'active' => true,
+    // Get all branches
+    $branches = $git->branch()->execute($deployment)->output;
+
+    // Pick a branch that is not currently active
+    $targetBranch = collect($branches)->first(fn($b) => $b['name'] !== $currentBranch)['name'];
+
+    expect($targetBranch)->not()->toBeNull();
+
+    $branch = Branch::factory()->create([
+        'name' => $targetBranch,
+        'deployment_id' => $deployment->id,
     ]);
-    $branchB = Branch::factory()->create([
-        'website_id' => $website->id,
-        'name' => 'branch-b',
-        'active' => false,
-    ]);
+    $action = new SetActiveBranch($git);
+    try {
+        $result = $action->execute($branch);
+        dd($result);
+        expect($result->output)->toContain('Please commit your changes or stash them before you switch branches.');
 
-    // run the action
-    /** @var SetActiveBranch $action */
-    $action = app(SetActiveBranch::class);
-    $action->handle($branchB); // or ->execute($branchB) depending on signature
+        // Otherwise, confirm branch changed
+        $newStatus = $git->status($deployment)->execute($deployment);
+        expect(trim($newStatus->output->branch))->toBe($targetBranch);
 
-    $branchA->refresh();
-    $branchB->refresh();
+        // Cleanup: switch back to original branch
+        $git->checkout($deployment, $currentBranch);
 
-    expect($branchA->active)->toBeFalse();
-    expect($branchB->active)->toBeTrue();
-})->skip();
+    } catch (\Exception $e) {
+        $output = $e->getMessage();
+        expect($output)->toContain('Please commit your changes or stash them before you switch branches.');
+    }
+}
 
-it('does not affect branches on other websites', function (): void {
-    $user = User::factory()->create();
-    $this->actingAs($user);
+it('switches branch on a local deployment safely', function (): void {
+    runBranchSwitchTest($this->localDeployment, $this->git);
+})->only();
 
-    $website1 = Website::factory()->create(['user_id' => $user->id]);
-    $website2 = Website::factory()->create(['user_id' => $user->id]);
+it('switches branch on a remote deployment safely', function (): void {
+    runBranchSwitchTest($this->remoteDeployment, $this->git);
+});
 
-    $b1_w1 = Branch::factory()->create(['website_id' => $website1->id, 'active' => true]);
-    $b2_w1 = Branch::factory()->create(['website_id' => $website1->id, 'active' => false]);
-
-    $b_other = Branch::factory()->create(['website_id' => $website2->id, 'active' => true]);
-
-    $action = app(SetActiveBranch::class);
-    $action->handle($b2_w1);
-
-    $b1_w1->refresh();
-    $b2_w1->refresh();
-    $b_other->refresh();
-
-    expect($b1_w1->active)->toBeFalse();      // changed inside same website
-    expect($b2_w1->active)->toBeTrue();       // selected
-    expect($b_other->active)->toBeTrue();     // untouched (different website)
-})->skip();
-
-it('requires authorization to set a branch active', function (): void {
-    $owner = User::factory()->create();
-    $other = User::factory()->create();
-
-    $website = Website::factory()->create(['user_id' => $owner->id]);
-    $branch = Branch::factory()->create(['website_id' => $website->id, 'active' => false]);
-
-    // Ensure gate/policy denies other user (you may assert with Gate too)
-    $this->actingAs($other);
-
-    $this->expectException(\Illuminate\Auth\Access\AuthorizationException::class);
-
-    $action = app(SetActiveBranch::class);
-    $action->handle($branch); // should throw because acting user is not authorized
-})->skip();

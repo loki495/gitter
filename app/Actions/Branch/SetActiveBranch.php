@@ -32,8 +32,11 @@ class SetActiveBranch
         Gate::authorize('update', $branch);
 
         // Step 1: verify repository exists and checkout is possible
-        $result = $this->git->checkout($branch)
-            ->execute($branch->deployment);
+        /** @var \App\Actions\Git\Checkout $result */
+        $result = $this->git
+            ->checkout($branch)
+            ->execute();
+        dd($result);
 
         if (! $result->success()) {
             // Prefer a domain-specific exception for clarity
