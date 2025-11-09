@@ -9,7 +9,7 @@ use App\Services\GitService;
 
 abstract class BaseAction
 {
-    /** @var array<int,string>|string */
+    /** @var array<int,mixed>|string */
     public array|string $parsedOutput;
 
     public string $outputRaw;
@@ -29,6 +29,7 @@ abstract class BaseAction
 
     public string $error;
 
+    // @phpstan-ignore constructor.unusedParameter
     public function __construct(
         protected GitService $git,
         protected ?Deployment $deployment = null,
@@ -64,12 +65,21 @@ abstract class BaseAction
         }
 
         // Merge arguments into command
-        $command = $this->buildCommand($this->deployment);
+        $command = $this->buildCommand();
         if ($this->arguments !== []) {
             $command = array_merge($command, $this->arguments);
         }
 
         // Run via GitService (decides SSH vs local)
+        /** @var array{
+         *     stdout: string,
+         *     stderr: string,
+         *     exit_code: int,
+         *     duration_ms: int,
+         *     method: string,
+         *     command: array<int, string>
+         * } $output
+         */
         $output = $this->git->runCommand($command, $this->deployment);
 
         // Child class parses output
@@ -104,7 +114,7 @@ abstract class BaseAction
     /**
      * Parse raw command output
      *
-     * @return array<int,string>|string
+     * @return array<int,mixed>|string
      */
     abstract protected function parseOutput(string $output): array|string;
 

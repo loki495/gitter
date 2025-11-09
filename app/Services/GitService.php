@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Actions\Git\BaseAction;
+use App\Actions\Git\Branch;
+use App\Actions\Git\Status;
 use App\Models\Deployment;
 
 /**
  * @property-read \App\Actions\Git\Branch $branch
  * @property-read \App\Actions\Git\Status $status
- * @property-read \App\Actions\Git\Status $checkout
+ *
+ * @method \App\Actions\Git\Checkout checkout(\App\Models\Branch $branch)
  */
 class GitService
 {
@@ -61,7 +64,14 @@ class GitService
      * Called by BaseAction::execute()
      *
      * @param  array<int,string>  $command
-     * @return array<string,mixed>
+     * @return array{
+     *     stdout: string,
+     *     stderr: string,
+     *     exit_code: int,
+     *     duration_ms: int,
+     *     method: string,
+     *     command: array<int, string>
+     * }
      */
     public function runCommand(array $command, Deployment $deployment): array
     {

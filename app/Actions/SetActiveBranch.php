@@ -31,8 +31,7 @@ class SetActiveBranch
     {
         Gate::authorize('update', $branch);
 
-        // Step 1: verify repository exists and checkout is possible
-        /** @var \App\Actions\Git\Checkout $result */
+        /** @var \App\Actions\Git\Checkout $action */
         $action = $this->git
             ->checkout($branch)
             ->execute();

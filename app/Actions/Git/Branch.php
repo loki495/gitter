@@ -28,9 +28,9 @@ class Branch extends BaseAction
     }
 
     /**
-     * @return array<int,string>|string
+     * @return array<int,array{name:string,active:bool}>
      */
-    protected function parseOutput(string $output): array|string
+    protected function parseOutput(string $output): array
     {
         foreach (explode("\n", $output) as $line) {
             $active = false;

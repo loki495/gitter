@@ -29,13 +29,16 @@ final readonly class PullDeploymentBranches
         $deployment->branches()->delete();
 
         if (! $action->success()) {
-            throw new \RuntimeException($action->output);
+            throw new \RuntimeException("Error refreshing branches:\n".$action->outputRaw);
         }
 
         $models = [];
 
+        /** @var array<int,array{name:string,active:bool}> $branches */
+        $branches = $action->result();
+
         // Update DB
-        foreach ($action->result() as $branch) {
+        foreach ($branches as $branch) {
             $models[] = Branch::updateOrCreate(
                 ['deployment_id' => $deployment->id, 'name' => $branch['name']],
                 [
