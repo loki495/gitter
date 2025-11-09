@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Actions\Branch\CreateBranch;
-use App\Actions\Branch\DeleteBranch;
-use App\Actions\Branch\UpdateBranch;
+use App\Actions\Models\Branch\CreateBranch;
+use App\Actions\Models\Branch\DeleteBranch;
+use App\Actions\Models\Branch\UpdateBranch;
 use App\Models\Branch;
 use App\Models\Deployment;
 use App\Models\User;

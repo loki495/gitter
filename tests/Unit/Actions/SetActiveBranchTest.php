@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\Branch\SetActiveBranch;
+use App\Actions\SetActiveBranch;
 use App\Models\Branch;
 use App\Models\Deployment;
 use App\Models\Machine;
@@ -54,38 +54,50 @@ beforeEach(function (): void {
     ]);
 });
 
-function runBranchSwitchTest(Deployment $deployment, GitService $git): void {
+function runBranchSwitchTest(Deployment $deployment, GitService $git): void
+{
     $status = $git->status->execute($deployment);
 
-    $currentBranch = preg_match('/^On branch (.*)/', $status->output, $matches) ? $matches[1] : null;
-    if (! $currentBranch) {
-        dd('no branch', $status->output);
+    $currentBranch = preg_match('/^On branch (.*)/', $status->result(), $matches) ? $matches[1] : null;
+    if ($currentBranch === null || $currentBranch === '' || $currentBranch === '0') {
+        dd('no branch', $status->result());
     }
 
     // Get all branches
-    $branches = $git->branch()->execute($deployment)->output;
+    $branches = $git->branch()->execute($deployment)->result();
 
     // Pick a branch that is not currently active
-    $targetBranch = collect($branches)->first(fn($b) => $b['name'] !== $currentBranch)['name'];
+    $targetBranch = collect($branches)->first(fn ($b): bool => $b['name'] !== $currentBranch)['name'];
 
     expect($targetBranch)->not()->toBeNull();
 
-    $branch = Branch::factory()->create([
+    $targetBranch = Branch::factory()->create([
         'name' => $targetBranch,
         'deployment_id' => $deployment->id,
     ]);
+
+    $currentBranch = Branch::factory()->create([
+        'name' => $currentBranch,
+        'deployment_id' => $deployment->id,
+    ]);
+
     $action = new SetActiveBranch($git);
     try {
-        $result = $action->execute($branch);
+        $result = $action->execute($targetBranch);
         dd($result);
-        expect($result->output)->toContain('Please commit your changes or stash them before you switch branches.');
+        expect($result->result())->toContain('Please commit your changes or stash them before you switch branches.');
 
         // Otherwise, confirm branch changed
-        $newStatus = $git->status($deployment)->execute($deployment);
-        expect(trim($newStatus->output->branch))->toBe($targetBranch);
+        $newStatus = $git->status->execute($deployment);
+        $newBranch = preg_match('/^On branch (.*)/', $newStatus->result(), $matches) ? $matches[1] : null;
+        expect(trim((string) $newBranch))->toBe($targetBranch->name);
 
         // Cleanup: switch back to original branch
-        $git->checkout($deployment, $currentBranch);
+        $git->checkout($git, '', $currentBranch);
+
+        $newStatus = $git->status->execute($deployment);
+        $newBranch = preg_match('/^On branch (.*)/', $newStatus->result(), $matches) ? $matches[1] : null;
+        expect(trim((string) $newBranch))->toBe($currentBranch->name);
 
     } catch (\Exception $e) {
         $output = $e->getMessage();
@@ -95,9 +107,8 @@ function runBranchSwitchTest(Deployment $deployment, GitService $git): void {
 
 it('switches branch on a local deployment safely', function (): void {
     runBranchSwitchTest($this->localDeployment, $this->git);
-})->only();
+});
 
 it('switches branch on a remote deployment safely', function (): void {
     runBranchSwitchTest($this->remoteDeployment, $this->git);
 });
-

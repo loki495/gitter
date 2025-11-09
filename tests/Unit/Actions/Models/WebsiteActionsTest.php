@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Actions\Website\CreateWebsite;
-use App\Actions\Website\DeleteWebsite;
-use App\Actions\Website\UpdateWebsite;
+use App\Actions\Models\Website\CreateWebsite;
+use App\Actions\Models\Website\DeleteWebsite;
+use App\Actions\Models\Website\UpdateWebsite;
 use App\Models\User;
 use App\Models\Website;
 use Illuminate\Validation\ValidationException;

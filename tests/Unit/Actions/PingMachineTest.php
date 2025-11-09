@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\Machine\CheckMachineStatus;
+use App\Actions\PingMachine;
 use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
@@ -33,7 +33,7 @@ beforeEach(function (): void {
 });
 
 it('returns reachable status for a machine without SSH key', function (): void {
-    $action = app(CheckMachineStatus::class);
+    $action = app(PingMachine::class);
     $result = $action->execute($this->local_machine);
 
     expect($result['reachable'])->toBeTrue()
@@ -44,7 +44,7 @@ it('returns reachable status for a machine without SSH key', function (): void {
 
 it('returns reachable status for a machine with SSH key', function (): void {
 
-    $action = app(CheckMachineStatus::class);
+    $action = app(PingMachine::class);
     $result = $action->execute($this->remote_machine);
 
     expect($result['reachable'])->toBeTrue()
@@ -59,7 +59,7 @@ it('returns unreachable status when SSH command fails', function (): void {
         'ip' => '10.0.0.1',
     ]);
 
-    $action = app(CheckMachineStatus::class);
+    $action = app(PingMachine::class);
     $result = $action->execute($machine);
 
     expect($result['reachable'])->toBeFalse();
@@ -75,7 +75,7 @@ it('handles exceptions thrown during command execution', function (): void {
     $sshService->shouldReceive('run')
         ->andThrow(new RuntimeException('Connection failed'));
 
-    $action = new CheckMachineStatus(app(CliRunner::class), $sshService);
+    $action = new PingMachine(app(CliRunner::class), $sshService);
 
     // Act
     $result = $action->execute($machine);

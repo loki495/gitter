@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\Branch\PullDeploymentBranches;
+use App\Actions\PullDeploymentBranches;
 use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\SshKey;

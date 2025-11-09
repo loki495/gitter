@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Actions\Machine\CreateMachine;
-use App\Actions\Machine\DeleteMachine;
-use App\Actions\Machine\UpdateMachine;
+use App\Actions\Models\Machine\CreateMachine;
+use App\Actions\Models\Machine\DeleteMachine;
+use App\Actions\Models\Machine\UpdateMachine;
 use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;

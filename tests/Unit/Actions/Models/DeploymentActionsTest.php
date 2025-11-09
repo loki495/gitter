@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Actions\Deployment\CreateDeployment;
-use App\Actions\Deployment\DeleteDeployment;
-use App\Actions\Deployment\UpdateDeployment;
+use App\Actions\Models\Deployment\CreateDeployment;
+use App\Actions\Models\Deployment\DeleteDeployment;
+use App\Actions\Models\Deployment\UpdateDeployment;
 use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\User;

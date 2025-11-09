@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Actions\Deployment\RecordDeploymentLog;
+use App\Actions\RecordDeploymentLog;
 use App\Models\Deployment;
 use App\Models\DeploymentLog;
 use App\Models\User;

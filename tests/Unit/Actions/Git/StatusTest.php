@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Actions\Git\Status;
+use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\SshKey;
-use App\Models\Deployment;
 use App\Services\GitService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -30,7 +29,7 @@ it('runs git status for a local deployment', function (): void {
     $git = app(GitService::class);
     $result = $git->status->execute($deployment);
 
-    expect($result->output)->toContain('On branch');
+    expect($result->result())->toContain('On branch');
 });
 
 it('runs git status for a remote SSH deployment', function (): void {
@@ -55,5 +54,5 @@ it('runs git status for a remote SSH deployment', function (): void {
     $git = app(GitService::class);
     $result = $git->status->execute($deployment);
 
-    expect($result->output)->toContain('On branch');
+    expect($result->result())->toContain('On branch');
 });

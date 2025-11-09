@@ -2,13 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Actions\Deployment\RecordDeploymentLog;
+use App\Actions\RecordDeploymentLog;
 use App\Models\Deployment;
 use App\Models\DeploymentLog;
 use App\Services\CliRunner;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 it('records a log after running a cli command via CliRunner', function (): void {
     $deployment = Deployment::factory()->create();

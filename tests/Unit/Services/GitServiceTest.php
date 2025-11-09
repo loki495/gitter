@@ -88,7 +88,7 @@ it('runs ssh command when deployment is not local', function (): void {
     $action = app(TestGitAction::class);
     $result = $action->execute($this->deployment);
 
-    expect($result->output)->toContain('On branch ');
+    expect($result->result())->toContain('On branch ');
     expect($result->method)->toBe('ssh');
     expect($result->command)->toBe('cd /home/andres/www/git && git status');
     expect($result->exitCode)->toBe(0);
@@ -104,7 +104,7 @@ it('runs local command from a BaseAction subclass', function (): void {
     $action = app(TestGitAction::class);
     $result = $action->execute($this->deployment);
 
-    expect($result->output)->toContain('On branch ');
+    expect($result->result())->toContain('On branch ');
     expect($result->command)->toBe('cd /home/andres/www/git && git status');
 
     expect($result->method)->toBe('local');

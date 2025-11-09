@@ -36,7 +36,10 @@ it('pulls branches successfully', function (): void {
         ->addArgument('--no-color')
         ->execute($deployment);
 
-    expect($result->output)->toBe(['* git', 'main']);
+    expect($result->result())->toHaveKey('0.name', 'git')
+        ->and($result->result())->toHaveKey('0.active', true)
+        ->and($result->result())->toHaveKey('1.name', 'main')
+        ->and($result->result())->toHaveKey('1.active', false);
 });
 
 it('fails to pull branches from wrong path', function (): void {
