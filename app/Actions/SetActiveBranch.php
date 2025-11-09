@@ -35,7 +35,6 @@ class SetActiveBranch
         $action = $this->git
             ->checkout($branch)
             ->execute();
-        dd($action);
 
         if (! $action->success()) {
             // Prefer a domain-specific exception for clarity
