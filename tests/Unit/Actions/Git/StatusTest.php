@@ -56,3 +56,14 @@ it('runs git status for a remote SSH deployment', function (): void {
 
     expect($result->result())->toContain('On branch');
 });
+
+it('throws runtime exception if deployment path is missing', function (): void {
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessage('Deployment with path is required');
+
+    $deployment = new Deployment();
+    $deployment->path = null;
+
+    $git = app(GitService::class);
+    $git->status->execute($deployment);
+});
