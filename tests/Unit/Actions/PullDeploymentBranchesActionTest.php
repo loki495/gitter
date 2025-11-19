@@ -116,7 +116,7 @@ it('throws an exception if local fetch fails', function (): void {
     expect(fn () => $action->execute($deployment))->toThrow(Exception::class);
 });
 
-it('throws an exception when the git branch action fails', function () {
+it('throws an exception when the git branch action fails', function (): void {
     // Arrange
     $deployment = Deployment::factory()->create();
     $errorMessage = 'fatal: not a git repository';
@@ -146,6 +146,6 @@ it('throws an exception when the git branch action fails', function () {
     $action = new PullDeploymentBranches($fakeGitService);
 
     // Act & Assert
-    expect(fn () => $action->execute($deployment))
+    expect(fn (): array => $action->execute($deployment))
         ->toThrow(RuntimeException::class, "Error refreshing branches:\n".$errorMessage);
 });
