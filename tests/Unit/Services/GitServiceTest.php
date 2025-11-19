@@ -123,3 +123,9 @@ it('throws exception when runCommand is called with a deployment with no machine
     ]);
     $this->git->status->execute($deployment);
 })->throws(\RuntimeException::class, 'Deployment has no machine.');
+
+it('throws exception when no action exists', function (): void {
+    $this->git = app(GitService::class);
+
+    $this->git->nonexistent();
+})->throws(\RuntimeException::class, 'Git action class \App\Actions\Git\Nonexistent does not exist.');

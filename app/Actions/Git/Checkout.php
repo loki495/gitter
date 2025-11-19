@@ -24,6 +24,7 @@ class Checkout extends BaseAction
     protected function buildCommand(): array
     {
         if (! $this->branch->deployment?->path) {
+            // TODO: needs coverage
             throw new \RuntimeException('Deployment with path is required');
         }
 

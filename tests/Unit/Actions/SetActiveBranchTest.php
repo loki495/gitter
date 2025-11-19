@@ -128,8 +128,36 @@ it('switches branch on a clean remote deployment', function (): void {
     });
 });
 
-it('fails to switch branch on a dirty remote deployment', function (): void {
-    runBranchSwitchTest($this->remoteDeployment, $this->git, function (): void {
-        $this->runInRepo('echo "uncommitted change" > new-file.txt');
-    });
+it('throws runtime exception if git checkout fails', function (): void {
+    Gate::shouldReceive('authorize')->andReturn(true); // Mock authorization
+
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessageMatches('/Failed to checkout branch ".*": .*$/');
+
+    $deployment = Deployment::factory()->create();
+    $branch = Branch::factory()->create(['deployment_id' => $deployment->id]);
+
+    $mockCheckoutAction = Mockery::mock(\App\Actions\Git\Checkout::class);
+    $mockCheckoutAction->shouldReceive('success')->andReturn(false);
+    $mockCheckoutAction->error = 'Mocked Git Error'; // Mock the property
+
+    $mockGitService = Mockery::mock(GitService::class);
+    $mockCheckoutInstance = Mockery::mock(\App\Actions\Git\Checkout::class);
+    $mockCheckoutInstance->shouldReceive('execute')->andReturn($mockCheckoutAction);
+    $mockGitService->shouldReceive('checkout')->andReturn($mockCheckoutInstance);
+
+    $action = new SetActiveBranch($mockGitService);
+    $action->execute($branch);
+});
+
+it('throws exception if branch doesnt belong to a deployment', function (): void {
+    Gate::shouldReceive('authorize')->andReturn(true); // Mock authorization
+
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessageMatches('/Branch does not belong to a deployment./');
+
+    $branch = new Branch(['deployment_id' => null]);
+
+    $action = new SetActiveBranch(app(GitService::class));
+    $action->execute($branch);
 });

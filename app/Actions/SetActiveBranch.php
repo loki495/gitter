@@ -31,6 +31,9 @@ class SetActiveBranch
     {
         Gate::authorize('update', $branch);
 
+        if (! $branch->deployment) {
+            throw new \RuntimeException('Branch does not belong to a deployment.');
+        }
         /** @var \App\Actions\Git\Checkout $action */
         $action = $this->git
             ->checkout($branch)
@@ -39,7 +42,7 @@ class SetActiveBranch
         if (! $action->success()) {
             // Prefer a domain-specific exception for clarity
             throw new \RuntimeException(
-                sprintf('Failed to checkout branch "%s": %s', $branch->name, $action->errorOutput())
+                sprintf('Failed to checkout branch "%s": %s', (string) $branch->name, $action->error)
             );
         }
 

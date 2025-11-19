@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Branch;
 use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\User;
@@ -64,3 +65,15 @@ it('fails to pull branches from wrong path', function (): void {
         ->execute($deployment);
 
 })->throws(Exception::class);
+
+it('throws exception if deployment path is null', function (): void {
+    Gate::shouldReceive('authorize')->andReturn(true); // Mock authorization
+
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessageMatches('/Deployment with path is required/');
+
+    $deployment = new Deployment(['path' => null]);
+
+    $git = app(GitService::class);
+    $git->branch->execute($deployment);
+});

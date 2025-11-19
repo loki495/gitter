@@ -63,12 +63,11 @@ class GitService
      *
      * @param  array<int,string>  $command
      * @return array{
-     *     stdout: string,
-     *     stderr: string,
-     *     exit_code: int,
-     *     duration_ms: int,
-     *     method: string,
-     *     command: array<int, string>
+     *      stdout: string,
+     *      stderr: string,
+     *      exit_code: int,
+     *      method: 'local'|'ssh',
+     *      command: array<int, string>
      * }
      */
     public function runCommand(array $command, Deployment $deployment): array

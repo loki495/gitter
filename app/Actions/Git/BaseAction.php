@@ -41,12 +41,9 @@ abstract class BaseAction
     /**
      * Add argument to the Git command, chainable
      */
-    public function addArgument(string $arg, ?string $value = null): self
+    public function addArgument(string $arg): self
     {
         $this->arguments[] = $arg;
-        if ($value !== null) {
-            $this->arguments[] = $value;
-        }
 
         return $this;
     }
@@ -61,6 +58,7 @@ abstract class BaseAction
         }
 
         if (! $this->deployment instanceof \App\Models\Deployment) {
+            // TODO: needs coverage
             throw new \RuntimeException('Deployment not found.');
         }
 

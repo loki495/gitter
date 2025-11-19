@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
+use App\Actions\Git\BaseAction;
+use App\Actions\Git\Branch as BranchAction;
 use App\Actions\PullDeploymentBranches;
 use App\Models\Deployment;
 use App\Models\Machine;
 use App\Models\SshKey;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
+use App\Services\CliRunner;
+use App\Services\GitService;
+use App\Services\SshService;
 
 beforeEach(function (): void {
     $this->user = User::factory()->create();
@@ -112,4 +114,38 @@ it('throws an exception if local fetch fails', function (): void {
     $action = app(PullDeploymentBranches::class);
 
     expect(fn () => $action->execute($deployment))->toThrow(Exception::class);
+});
+
+it('throws an exception when the git branch action fails', function () {
+    // Arrange
+    $deployment = Deployment::factory()->create();
+    $errorMessage = 'fatal: not a git repository';
+
+    $branchActionMock = Mockery::mock(BranchAction::class);
+    $branchActionMock->shouldReceive('addArgument')->with('--no-color')->andReturnSelf();
+    $branchActionMock->shouldReceive('execute')->with($deployment)->andReturn($branchActionMock);
+    $branchActionMock->shouldReceive('success')->once()->andReturn(false);
+    $branchActionMock->outputRaw = $errorMessage;
+
+    // Create a fake GitService that overrides __get
+    $fakeGitService = new class(mock(SshService::class), mock(CliRunner::class)) extends GitService
+    {
+        public BranchAction $branchMock;
+
+        public function __get(string $name): BaseAction
+        {
+            if ($name === 'branch') {
+                return $this->branchMock;
+            }
+
+            return parent::__get($name);
+        }
+    };
+    $fakeGitService->branchMock = $branchActionMock;
+
+    $action = new PullDeploymentBranches($fakeGitService);
+
+    // Act & Assert
+    expect(fn () => $action->execute($deployment))
+        ->toThrow(RuntimeException::class, "Error refreshing branches:\n".$errorMessage);
 });
