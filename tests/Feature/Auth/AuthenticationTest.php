@@ -46,4 +46,4 @@ test('users can logout', function (): void {
 
     $this->assertGuest();
     $response->assertRedirect('/');
-})->skip();
+});
