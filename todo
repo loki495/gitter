@@ -1,7 +1,6 @@
 todo
 
 Phase 1 – Core Git & Machine Features
-- Git: implement SetActiveBranchAction, test, integrate in UI
 - Git: one-directional linking of deployments for push/pull
 - Git: get branch status (current branch, ahead/behind, last commit)
 - Machines: get HD space and free memory per partition
