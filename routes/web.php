@@ -27,8 +27,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('ssh-keys/create', 'admin.ssh-keys.edit')->name('ssh-keys.create');
     Volt::route('ssh-keys/{sshKey}', 'admin.ssh-keys.edit')->name('ssh-keys.edit');
 
-    Route::post('ssh-keys/all', 'Admin\SshKeyController@all')->name('ssh-keys.all');
-
     Volt::route('deployments/logs', 'admin.deployments.logs')->name('deployments.logs');
 });
 
